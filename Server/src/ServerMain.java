@@ -70,7 +70,6 @@ public class ServerMain implements MyMessages {
         dSocket.receive(pkt);
 
         in = new ObjectInputStream(new ByteArrayInputStream(pkt.getData(), 0, pkt.getLength()));
-
         String dsAnswer = (String) in.readObject();
 
         if (dsAnswer.contains(CONNECT_CONFIRM)) {
@@ -84,22 +83,24 @@ public class ServerMain implements MyMessages {
         String s[] = loginRequest.split(System.getProperty("Line.seperator"));
     }
 
-    public void startAnswering() throws IOException {
+    public void startAnswering() throws IOException, ClassNotFoundException {
         ServerSocket socket = new ServerSocket(DEFAULT_SERVER_PORT);
         byte[] barray = new byte[MAX_SIZE];
         for (; ; ) {
             Socket cliSocket = socket.accept();
             cliSocket.setSoTimeout(TIMEOUT * 1000);
             OutputStream out = cliSocket.getOutputStream();
-            PrintStream pout = new PrintStream(out);
+            ObjectOutputStream oOut = new ObjectOutputStream(out);
             InputStream in = cliSocket.getInputStream();
-            BufferedReader pin = new BufferedReader(new InputStreamReader(in));
+            ObjectInputStream oIn = new ObjectInputStream(in);
 
-            if (pin.readLine().equalsIgnoreCase(LOGIN_REQUEST)) {
-                System.out.println(LOGIN_REQUEST + "request received");
+            String s = (String) oIn.readObject();
 
-                pout.print(LOGIN_SUCCESSFUL);
-                pout.flush();
+            if (s.equalsIgnoreCase(CONNECT_REQUEST)) {
+                System.out.println(s + "request received");
+
+                oOut.writeObject(CONNECT_CONFIRM);
+
             } else
                 socket.close();
         }
@@ -140,7 +141,7 @@ public class ServerMain implements MyMessages {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (SocketException e) {
-            System.out.println("Ocorreu um erro a aceder ao socket " + e.getCause());
+            System.out.println("Ocorreu um erro a aceder ao socket");
             // e.printStackTrace();
         } catch (IOException e) {
             if (e instanceof SocketTimeoutException)

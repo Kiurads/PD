@@ -12,29 +12,34 @@ public class Client implements MyMessages {
     ObjectOutputStream out = null;
     boolean loggedUser = false;
 
-    public void getMyServer(InetAddress dsAddr) throws UnknownHostException, SocketException, IOException {
+    public void getMyServer(InetAddress dsAddr) throws UnknownHostException, SocketException, IOException, ClassNotFoundException {
         DatagramSocket socket = null;
         DatagramPacket pkt = null;
         byte[] barray = new byte[MAX_SIZE];
         String dsAnswer;
-        ByteArrayOutputStream bout;
+        ByteArrayOutputStream bOut;
         ObjectOutputStream out;
 
         socket = new DatagramSocket();
 
         socket.setSoTimeout(TIMEOUT * 1000);
 
-        pkt = new DatagramPacket(REQUEST_SERVER.getBytes(), REQUEST_SERVER.length(),
-                dsAddr, DEFAULT_DS_PORT);
+        bOut = new ByteArrayOutputStream();
+        out = new ObjectOutputStream(bOut);
+
+        out.writeObject(REQUEST_SERVER);
+        out.flush();
+
+        pkt = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), dsAddr, DEFAULT_DS_PORT);
         socket.send(pkt);
 
         pkt = new DatagramPacket(barray, barray.length);
         socket.receive(pkt);
 
-        dsAnswer = new String(barray);
+        in = new ObjectInputStream(new ByteArrayInputStream(pkt.getData(), 0, pkt.getLength()));
+        dsAnswer = (String) in.readObject();
 
         Scanner sc = new Scanner(dsAnswer);
-
         String msgType = sc.nextLine();
 
         if (msgType.equalsIgnoreCase(CONNECT_CONFIRM)) {
@@ -47,8 +52,8 @@ public class Client implements MyMessages {
         String sip = sc.nextLine();
         String spo = sc.nextLine();
 
-        serverIP = InetAddress.getByName(sc.nextLine());
-        serverPort = Integer.parseInt(sc.nextLine());
+        serverIP = InetAddress.getByName(sip);
+        serverPort = Integer.parseInt(spo);
 
     }
 
@@ -61,11 +66,15 @@ public class Client implements MyMessages {
             in = new ObjectInputStream(socketToServer.getInputStream());
 
             out.writeObject(CONNECT_REQUEST);
+            out.flush();
 
             String s = (String) in.readObject();
+            System.out.println(s);
 
             if (s.compareToIgnoreCase(CONNECT_CONFIRM) != 0)
                 throw new IOException();
+
+            while(true){}
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -132,15 +141,15 @@ public class Client implements MyMessages {
         try {
             me.getMyServer(InetAddress.getByName("localhost"));
 
-            while(true){
-
-            }
+            me.connectToMyServer();
 
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }

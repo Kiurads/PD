@@ -42,7 +42,7 @@ public class Diretorio implements MyMessages {
         return request;
     }
 
-    public void connectServer() throws IOException, ClassNotFoundException {
+    public void answerRequest() throws IOException, ClassNotFoundException {
         String receivedMsg, reply;
         InetAddress newServerAddr, newClientAddr;
         int newServerPort, newClientPort;
@@ -91,7 +91,7 @@ public class Diretorio implements MyMessages {
                     out.writeObject(clientReply);
                     out.flush();
 
-                    pkt = new DatagramPacket(bOut.toByteArray(), bOut.size());
+                    pkt = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), newClientAddr, newClientPort);
                     socket.send(pkt);
 
                     clntData.add(new ClientData(newClientAddr, newClientPort));
@@ -112,7 +112,7 @@ public class Diretorio implements MyMessages {
     public static String getServerDetails(InetAddress addr, int port) {
         currentServer++;
         return CONNECT_CONFIRM + "\n"
-                + addr + "\n"
+                + addr.getHostAddress() + "\n"
                 + port;
     }
 
@@ -121,7 +121,7 @@ public class Diretorio implements MyMessages {
         try {
             Diretorio dir = new Diretorio();
 
-            dir.connectServer();
+            dir.answerRequest();
 
 
         } catch (SocketException e) {
