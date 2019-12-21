@@ -1,136 +1,112 @@
+import ServerCommunication.Server;
+
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
 
-public class Diretorio implements MyMessages {
-    public static final int MAX_SIZE = 256;
-    private byte[] defaultBArray = new byte[MAX_SIZE];
+public class Diretorio implements Constants {
+    private static int currentServer = 0;
     private DatagramSocket socket;
-    private DatagramPacket pkt;
-    private List<ServerData> serverAddrs;
-    private List<ClientData> clntData;
-    static int currentServer = 0;
+    private DatagramPacket packet;
+    private List<Server> servers;
 
     public Diretorio() throws SocketException {
         socket = new DatagramSocket(DEFAULT_DS_PORT);
-        serverAddrs = new ArrayList<>();
-        clntData = new ArrayList<>();
+        servers = new ArrayList<>();
     }
 
-    public String waitDatagram() throws IOException, ClassNotFoundException {
+    public String waitDatagram() throws IOException {
         String request;
         ObjectInputStream in;
 
         if (socket == null)
             return null;
 
-        pkt = new DatagramPacket(defaultBArray, MAX_SIZE);
-        socket.receive(pkt);
+        packet = new DatagramPacket(new byte[MAX_SIZE], MAX_SIZE);
+        socket.receive(packet);
 
-        in = new ObjectInputStream(new ByteArrayInputStream(pkt.getData(), 0, pkt.getLength()));
+        in = new ObjectInputStream(new ByteArrayInputStream(packet.getData(), 0, packet.getLength()));
 
-        request = (String) in.readObject();
+        try {
+            request = (String) in.readObject();
+        } catch (ClassNotFoundException e) {
+            System.out.println("[Proxy] Invalid request received: " + e.getCause());
+            return null;
+        }
 
-        if (request != null)
-            System.out.println("Novo Pedido Recebido: " + request);
+        if (request == null)
+            return null;
 
+        System.out.println("[Proxy] Request received: " + request);
         return request;
     }
 
-    public void answerRequest() throws IOException, ClassNotFoundException {
-        String receivedMsg, reply;
-        InetAddress newServerAddr, newClientAddr;
-        int newServerPort, newClientPort;
-        ByteArrayOutputStream bOut = null;
-        ObjectOutputStream out = null;
+    public void answerRequests() throws IOException {
+        InetAddress packetAddress;
+        int packetPort;
+        ByteArrayOutputStream bOut;
+        ObjectOutputStream out;
         ObjectInputStream in = null;
+        String message;
 
         while (true) {
-            receivedMsg = waitDatagram();
+            message = waitDatagram();
 
-            if (receivedMsg == null)
+            if (message == null)
                 break;
 
-            switch (receivedMsg) {
+            packetAddress = packet.getAddress();
+            packetPort = packet.getPort();
+
+            bOut = new ByteArrayOutputStream();
+            out = new ObjectOutputStream(bOut);
+
+            switch (message) {
                 case CONNECT_REQUEST:
-                    newServerAddr = pkt.getAddress();
-                    newServerPort = pkt.getPort();
+                    try {
+                        out.writeObject(CONNECT_CONFIRM);
+                        out.flush();
 
-                    bOut = new ByteArrayOutputStream();
-                    out = new ObjectOutputStream(bOut);
+                        packet = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), packetAddress, packetPort);
+                        socket.send(packet);
 
-                    out.writeObject(CONNECT_CONFIRM);
-                    out.flush();
+                        servers.add(new Server(packetAddress, packetPort));
+                    } catch (IOException e) {
+                        break;
+                    }
 
-                    pkt = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), newServerAddr, newServerPort);
-                    socket.send(pkt);
-
-                    serverAddrs.add(new ServerData(newServerAddr, DEFAULT_SERVER_PORT));
-                    System.out.println("New Server added successfully!");
+                    System.out.println("[Server] Server " + packetAddress.getHostAddress() + ":" + packetPort + " registered");
                     break;
 
                 case REQUEST_SERVER:
-
-                    newClientAddr = pkt.getAddress();
-                    newClientPort = pkt.getPort();
-
-                    String clientReply = getServerDetails(serverAddrs.get(currentServer).getAddr(),
-                            serverAddrs.get(currentServer).getPort());
-
-                    if (currentServer > serverAddrs.size() - 1)
-                        currentServer = 0;
-
-                    bOut = new ByteArrayOutputStream();
-                    out = new ObjectOutputStream(bOut);
+                    String clientReply;
+                    if (!servers.isEmpty()) clientReply = getServerDetails();
+                    else clientReply = NO_SERVERS;
 
                     out.writeObject(clientReply);
                     out.flush();
 
-                    pkt = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), newClientAddr, newClientPort);
-                    socket.send(pkt);
+                    packet = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), packetAddress, packetPort);
+                    socket.send(packet);
 
-                    clntData.add(new ClientData(newClientAddr, newClientPort));
-                    System.out.println("New Client added successfully!");
+                    System.out.println("[Client] Request has been replied with: " + clientReply);
+
                     break;
-
-                default:
-                    continue;
             }
         }
 
     }
 
-    public void connectClient() {
+    public String getServerDetails() {
+        String serverDetails = servers.get(currentServer).toString();
 
-    }
+        if (currentServer == servers.size() - 1) currentServer = 0;
+        else currentServer++;
 
-    public static String getServerDetails(InetAddress addr, int port) {
-        currentServer++;
-        return CONNECT_CONFIRM + "\n"
-                + addr.getHostAddress() + "\n"
-                + port;
-    }
-
-    public static void main(String[] args) {
-
-        try {
-            Diretorio dir = new Diretorio();
-
-            dir.answerRequest();
-
-
-        } catch (SocketException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
+        return serverDetails;
     }
 }
