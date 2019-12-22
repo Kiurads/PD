@@ -1,4 +1,5 @@
-import ServerCommunication.Server;
+import server.constants.Constants;
+import server.Server;
 
 import java.io.*;
 import java.net.DatagramPacket;
@@ -66,9 +67,9 @@ public class Diretorio implements Constants {
             out = new ObjectOutputStream(bOut);
 
             switch (message) {
-                case CONNECT_REQUEST:
+                case REGISTER_SERVER:
                     try {
-                        out.writeObject(CONNECT_CONFIRM);
+                        out.writeObject(REGISTER_SERVER_SUCCESS);
                         out.flush();
 
                         packet = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), packetAddress, packetPort);
@@ -79,13 +80,18 @@ public class Diretorio implements Constants {
                         break;
                     }
 
-                    System.out.println("[Server] Server " + packetAddress.getHostAddress() + ":" + packetPort + " registered");
+                    System.out.println("[Server] Server " + packetAddress.getHostAddress() + " registered");
                     break;
 
                 case REQUEST_SERVER:
                     String clientReply;
-                    if (!servers.isEmpty()) clientReply = getServerDetails();
-                    else clientReply = NO_SERVERS;
+                    if (!servers.isEmpty()) {
+                        clientReply = getServerDetails();
+
+                        servers.get(currentServer).request();
+                    }
+                    else
+                        clientReply = NO_SERVERS;
 
                     out.writeObject(clientReply);
                     out.flush();
@@ -93,9 +99,17 @@ public class Diretorio implements Constants {
                     packet = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), packetAddress, packetPort);
                     socket.send(packet);
 
-                    System.out.println("[Client] Request has been replied with: " + clientReply);
+                    System.out.println("[Client] Request has been handled");
 
                     break;
+                case REMOVE_SERVER:
+                    for (int i = 0; i < servers.size(); i++) {
+                        if (servers.get(i).getAddress().equals(packetAddress)) {
+                            System.out.println("[Proxy] Removing server at " + packetAddress.getHostAddress());
+                            servers.remove(i);
+                            break;
+                        }
+                    }
             }
         }
 

@@ -1,12 +1,11 @@
-package ServerCommunication;
+package proxy;
 
-import ServerCommunication.Constants.Constants;
+import proxy.constants.Constants;
 
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.Scanner;
 
 public class Proxy implements Constants {
     private DatagramSocket socket;
@@ -17,7 +16,7 @@ public class Proxy implements Constants {
 
     public Proxy(InetAddress address) throws IOException {
         socket = new DatagramSocket();
-        socket.setSoTimeout(TIMEOUT * 1000);
+        socket.setSoTimeout(10 * 1000);
 
         bOut = new ByteArrayOutputStream();
         out = new ObjectOutputStream(bOut);
@@ -29,23 +28,24 @@ public class Proxy implements Constants {
         receivePacket = new DatagramPacket(new byte[MAX_SIZE], MAX_SIZE);
     }
 
-    public Server getNewServer() throws IOException, ClassNotFoundException {
-        String result;
+    public void register() throws IOException, ClassNotFoundException {
+        String reply;
 
-        send(REQUEST_SERVER);
+        send(REGISTER_SERVER);
+        reply = receive();
 
-        result = receive();
-
-        if (result.equalsIgnoreCase(NO_SERVERS)) throw new IOException(result);
-
-        Scanner scanner = new Scanner(result);
-        String serverAddress = scanner.nextLine();
-        Integer serverPort = Integer.parseInt(scanner.nextLine());
-
-        return new Server(serverAddress, serverPort);
+        if (reply.contains(REGISTER_SERVER_SUCCESS)) System.out.println("[Proxy] Server registered");
     }
 
-    private void send(String message) throws IOException {
+    public void remove() throws IOException {
+        send(REMOVE_SERVER);
+        socket.close();
+    }
+
+    public void send(String message) throws IOException {
+        bOut = new ByteArrayOutputStream();
+        out = new ObjectOutputStream(bOut);
+
         out.writeObject(message);
         out.flush();
 
@@ -53,11 +53,13 @@ public class Proxy implements Constants {
         socket.send(sendPacket);
     }
 
-    private String receive() throws IOException, ClassNotFoundException {
+    public String receive() throws ClassNotFoundException, IOException {
         ObjectInputStream in;
 
         socket.receive(receivePacket);
         in = new ObjectInputStream(new ByteArrayInputStream(receivePacket.getData(), 0, receivePacket.getLength()));
+
+        System.out.println("[Proxy] Message received");
 
         return (String) in.readObject();
     }

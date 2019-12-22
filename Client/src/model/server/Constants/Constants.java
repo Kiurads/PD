@@ -1,3 +1,5 @@
+package model.server.Constants;
+
 public interface Constants {
     String REQUEST_SERVER = "REQUESTING SERVER";
     String NO_SERVERS = "NO_SERVERS";
@@ -7,9 +9,6 @@ public interface Constants {
 
     String REGISTER_FAILED = "REGISTER FAILED";
     String REGISTER_SUCCESSFUL = "REGISTER SUCCESSFUL";
-
-    String CONNECT_REQUEST = "CONNECT REQUEST";
-    String CONNECT_CONFIRM = "CONNECT SUCCESSFUL";
 
     //Inteiros
     int TIMEOUT = 10; //segundos

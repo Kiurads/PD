@@ -7,8 +7,6 @@ public class DiretorioMain {
             Diretorio diretorio = new Diretorio();
 
             diretorio.answerRequests();
-        } catch (SocketException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

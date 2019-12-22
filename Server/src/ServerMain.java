@@ -6,10 +6,10 @@ public class ServerMain {
 
         try {
             server = new Server();
-        } catch (IOException e) {
+
+            server.start();
+        } catch (IOException | InterruptedException e) {
             System.out.println("No proxy available");
         }
-
-
     }
 }
