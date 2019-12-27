@@ -41,10 +41,6 @@
         </Menu>
       </menus>
     </MenuBar>
-      <BorderPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-         <right>
-            <TextArea fx:id="info" editable="false" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-         </right>
-      </BorderPane>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
   </children>
 </VBox>

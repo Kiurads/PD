@@ -1,31 +1,28 @@
 import server.constants.Constants;
 import server.Server;
+import server.constants.MessageTypes;
 
 import java.io.*;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Diretorio implements Constants {
-    private static int currentServer = 0;
+    private int currentServer = 0;
     private DatagramSocket socket;
     private DatagramPacket packet;
     private List<Server> servers;
 
     public Diretorio() throws SocketException {
         socket = new DatagramSocket(DEFAULT_DS_PORT);
+        socket.setSoTimeout(TIMEOUT * 1000);
+
         servers = new ArrayList<>();
     }
 
     public String waitDatagram() throws IOException {
-        String request;
+        String message;
         ObjectInputStream in;
-
-        if (socket == null)
-            return null;
 
         packet = new DatagramPacket(new byte[MAX_SIZE], MAX_SIZE);
         socket.receive(packet);
@@ -33,17 +30,17 @@ public class Diretorio implements Constants {
         in = new ObjectInputStream(new ByteArrayInputStream(packet.getData(), 0, packet.getLength()));
 
         try {
-            request = (String) in.readObject();
+            message = (String) in.readObject();
         } catch (ClassNotFoundException e) {
             System.out.println("[Proxy] Invalid request received: " + e.getCause());
-            return null;
+            return "";
         }
 
-        if (request == null)
+        if (message == null)
             return null;
 
-        System.out.println("[Proxy] Request received: " + request);
-        return request;
+        System.out.println("[Proxy] Message received: " + message);
+        return message;
     }
 
     public void answerRequests() throws IOException {
@@ -51,14 +48,14 @@ public class Diretorio implements Constants {
         int packetPort;
         ByteArrayOutputStream bOut;
         ObjectOutputStream out;
-        ObjectInputStream in = null;
         String message;
 
         while (true) {
-            message = waitDatagram();
-
-            if (message == null)
-                break;
+            try {
+                message = waitDatagram();
+            } catch (SocketTimeoutException e) {
+                message = "";
+            }
 
             packetAddress = packet.getAddress();
             packetPort = packet.getPort();
@@ -67,9 +64,9 @@ public class Diretorio implements Constants {
             out = new ObjectOutputStream(bOut);
 
             switch (message) {
-                case REGISTER_SERVER:
+                case MessageTypes.REGISTER_SERVER:
                     try {
-                        out.writeObject(REGISTER_SERVER_SUCCESS);
+                        out.writeObject(MessageTypes.REGISTER_SERVER_SUCCESS);
                         out.flush();
 
                         packet = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), packetAddress, packetPort);
@@ -83,15 +80,18 @@ public class Diretorio implements Constants {
                     System.out.println("[Server] Server " + packetAddress.getHostAddress() + " registered");
                     break;
 
-                case REQUEST_SERVER:
+                case MessageTypes.REQUEST_SERVER:
                     String clientReply;
                     if (!servers.isEmpty()) {
-                        clientReply = getServerDetails();
-
                         servers.get(currentServer).request();
-                    }
-                    else
-                        clientReply = NO_SERVERS;
+                        message = waitDatagram();
+
+                        clientReply = servers.get(currentServer).getAddress().getHostAddress() + '\n' + message;
+
+                        if (currentServer == servers.size() - 1) currentServer = 0;
+                        else currentServer++;
+                    } else
+                        clientReply = MessageTypes.NO_SERVERS;
 
                     out.writeObject(clientReply);
                     out.flush();
@@ -102,25 +102,34 @@ public class Diretorio implements Constants {
                     System.out.println("[Client] Request has been handled");
 
                     break;
-                case REMOVE_SERVER:
+                case MessageTypes.REMOVE_SERVER:
                     for (int i = 0; i < servers.size(); i++) {
                         if (servers.get(i).getAddress().equals(packetAddress)) {
                             System.out.println("[Proxy] Removing server at " + packetAddress.getHostAddress());
+                            if (currentServer == servers.size() - 1) currentServer = 0;
                             servers.remove(i);
                             break;
                         }
                     }
             }
+
+            pingServers();
         }
 
     }
 
-    public String getServerDetails() {
-        String serverDetails = servers.get(currentServer).toString();
+    private void pingServers() throws IOException {
+        for (int i = 0; i < servers.size(); i++) {
+            servers.get(i).sendMessage(MessageTypes.PING);
 
-        if (currentServer == servers.size() - 1) currentServer = 0;
-        else currentServer++;
-
-        return serverDetails;
+            try {
+                String reply = waitDatagram();
+            } catch (SocketException e) {
+                System.out.println("[Proxy] Removing server at " + servers.get(i).getAddress().getHostAddress() + " for inactivity");
+                if (currentServer == servers.size() - 1) currentServer = 0;
+                servers.remove(i);
+            }
+        }
     }
+
 }

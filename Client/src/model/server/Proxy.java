@@ -61,4 +61,9 @@ public class Proxy implements Constants {
 
         return (String) in.readObject();
     }
+
+    public void close() throws IOException {
+        out.close();
+        socket.close();
+    }
 }

@@ -2,6 +2,7 @@ package proxy;
 
 import client.ClientThread;
 import proxy.constants.Constants;
+import proxy.constants.MessageTypes;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -35,11 +36,20 @@ public class ProxyThread extends Thread implements Constants {
             try {
                 String message = proxy.receive();
 
-                if (message.contains(REQUEST_SERVER)) {
-                    System.out.println("[Proxy] Server requested");
+                switch (message) {
+                    case MessageTypes.REQUEST_SERVER:
+                        System.out.println("[Proxy] Server requested");
 
-                    clientThreads.add(new ClientThread());
-                    clientThreads.get(clientThreads.size() - 1).start();
+                        ClientThread thread = new ClientThread();
+                        proxy.send(String.valueOf(thread.getPort()));
+
+                        thread.start();
+
+                        clientThreads.add(thread);
+                        break;
+                    case MessageTypes.PING:
+                        proxy.send(MessageTypes.PING);
+                        break;
                 }
             } catch (IOException ignored) {
             } catch (ClassNotFoundException e) {
@@ -48,6 +58,7 @@ public class ProxyThread extends Thread implements Constants {
         }
 
         try {
+            System.out.println("[Proxy] Closing connection");
             proxy.remove();
         } catch (IOException ignored) {
         }

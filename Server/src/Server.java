@@ -1,4 +1,5 @@
 import client.ClientThread;
+import database.DatabaseConnector;
 import proxy.constants.Constants;
 import proxy.ProxyThread;
 
@@ -13,7 +14,7 @@ public class Server implements Constants {
     private List<ClientThread> clientThreads;
     private ProxyThread proxyThread;
 
-    public Server() throws IOException {
+    public Server(InetAddress localHost) throws IOException {
         clientThreads = new ArrayList<>();
         proxyThread = new ProxyThread(InetAddress.getLocalHost(), clientThreads);
 
@@ -31,7 +32,11 @@ public class Server implements Constants {
         proxyThread.terminate();
 
         for (ClientThread thread : clientThreads) {
-            thread.terminate();
+            try {
+                thread.terminate();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             thread.join();
         }

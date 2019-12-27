@@ -1,14 +1,12 @@
 package model;
 
-import model.server.Constants.Constants;
 import model.server.Proxy;
 import model.server.Server;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 
-public class Client implements Constants {
+public class Client implements MessageTypes {
     private Proxy proxy;
     private Server server;
 
@@ -35,7 +33,22 @@ public class Client implements Constants {
         return server;
     }
 
-    public void upload(File file) {
-        server.upload(file);
+    public void upload(String fileName, String filePath) throws IOException {
+        server.sendMessage(UPLOAD + "\n" + fileName);
+        server.upload(filePath);
+    }
+
+    public void reconnect() throws IOException, ClassNotFoundException {
+        server = proxy.getNewServer();
+
+        server.connect();
+
+        //TODO If user is registered login on new server
+    }
+
+    public void shutdown() throws IOException {
+        proxy.close();
+
+        server.close();
     }
 }

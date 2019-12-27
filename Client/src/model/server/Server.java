@@ -1,14 +1,14 @@
 package model.server;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import model.MessageTypes;
+import model.server.Constants.Constants;
+
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class Server {
+public class Server implements Constants {
     private InetAddress address;
     private int port;
     private Socket socket;
@@ -50,8 +50,20 @@ public class Server {
         return (String) socketIn.readObject();
     }
 
-    public void upload(File file) {
+    public void upload(String filePath) throws IOException {
+        FileInputStream fileInputStream;
+        OutputStream outputStream;
+        byte[] fileChunk = new byte[MAX_SIZE];
+        int nbytes;
 
+        fileInputStream = new FileInputStream(filePath);
+        outputStream = socket.getOutputStream();
+
+        while ((nbytes = fileInputStream.read(fileChunk)) > 0) {
+            outputStream.write(fileChunk, 0, nbytes);
+        }
+        outputStream.flush();
+        fileInputStream.close();
     }
 
     public boolean registerUser(String username, String password) { //TODO
@@ -62,5 +74,12 @@ public class Server {
     public String toString() {
         return "Server address:" + address + '\n' +
                 "Server port: " + port;
+    }
+
+    public void close() throws IOException {
+        sendMessage(MessageTypes.CLOSE);
+        socketIn.close();
+        socketOut.close();
+        socket.close();
     }
 }

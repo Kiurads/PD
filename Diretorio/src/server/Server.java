@@ -1,6 +1,7 @@
 package server;
 
 import server.constants.Constants;
+import server.constants.MessageTypes;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,7 +28,25 @@ public class Server implements Constants {
         bOut = new ByteArrayOutputStream();
         out = new ObjectOutputStream(bOut);
 
-        out.writeObject(REQUEST_SERVER);
+        out.writeObject(MessageTypes.REQUEST_SERVER);
+        out.flush();
+
+        packet = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), address, port);
+        socket.send(packet);
+
+        System.out.println("[Server:" + address.getHostAddress() + "] Requesting server");
+    }
+
+    public void sendMessage(String message) throws IOException {
+        DatagramSocket socket = new DatagramSocket();
+        DatagramPacket packet;
+        ObjectOutputStream out;
+        ByteArrayOutputStream bOut;
+
+        bOut = new ByteArrayOutputStream();
+        out = new ObjectOutputStream(bOut);
+
+        out.writeObject(message);
         out.flush();
 
         packet = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), address, port);
@@ -40,8 +59,12 @@ public class Server implements Constants {
         return address;
     }
 
+    public int getPort() {
+        return port;
+    }
+
     @Override
     public String toString() {
-        return getAddress().getHostAddress() + "\n" + DEFAULT_SERVER_PORT;
+        return getAddress().getHostAddress() + "\n" + getPort();
     }
 }

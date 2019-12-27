@@ -1,6 +1,8 @@
 package model;
 
+import GUI.Controller;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -16,9 +18,18 @@ public class ClientApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/FXML/GUI.fxml"));
         Parent root = loader.load();
-        Scene scene = new Scene(root, 300, 300);
+        Controller controller = loader.getController();
+        primaryStage.setOnHidden(event -> {
+            try {
+                controller.shutdown();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Platform.exit();
+        });
+        Scene scene = new Scene(root, 500, 500);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

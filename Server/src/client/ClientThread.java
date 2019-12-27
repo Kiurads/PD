@@ -2,10 +2,9 @@ package client;
 
 import client.constants.MessageTypes;
 
-import java.io.File;
 import java.io.IOException;
 
-public class ClientThread extends Thread implements MessageTypes {
+public class ClientThread extends Thread {
     Client client;
     boolean running;
 
@@ -15,35 +14,48 @@ public class ClientThread extends Thread implements MessageTypes {
         running = true;
     }
 
-    public void terminate() {
+    public void terminate() throws IOException {
         running = false;
+        client.close();
     }
 
     @Override
     public void run() {
         String[] message;
 
-        System.out.println("[ClientThread:" + getId() + "] Started");
+        try {
+            client.accept();
+        } catch (IOException e) {
+            System.out.println("ERROR " + e.getCause());
+            running = false;
+        }
+
         while (running) {
             try {
-                message = client.receive().split(System.getProperty("line.separator"));
+                message = client.receive().split("\n");
             } catch (IOException | ClassNotFoundException e) {
                 break;
             }
 
-            switch (message[0]) {
-                case UPLOAD:
-                    String filePath;
-                    File localPath;
-                    int nbytes;
-                    try {
-                        localPath = new File("/Uploads");
-                        filePath = localPath.getCanonicalPath() + File.separator + message[1];
-                    } catch (IOException e) {
-                        break;
-                    }
+            System.out.println("[ClientThread:" + getId() + "] " + message[0]);
 
-                    client.getFile(filePath);
+            switch (message[0]) {
+                case MessageTypes.UPLOAD:
+                    try {
+                        if(client.getFile(message[1])) {
+                            System.out.println("[ClientThread:" + getId() + "] Success");
+                            client.send(MessageTypes.SUCCESS);
+                            break;
+                        }
+
+                        client.send(MessageTypes.FAILURE);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case MessageTypes.CLOSE:
+                    running = false;
+                    break;
             }
         }
 
@@ -52,5 +64,11 @@ public class ClientThread extends Thread implements MessageTypes {
         } catch (IOException e) {
             System.out.println("[Error] [Client:" + getId() + "] " + e.getCause());
         }
+
+        System.out.println("[ClientThread:" + getId() + "] Closing connection");
+    }
+
+    public int getPort() {
+        return client.getServerPort();
     }
 }
