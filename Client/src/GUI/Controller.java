@@ -34,7 +34,7 @@ public class Controller {
         }
 
         timeSlider.valueProperty().addListener(ov -> {
-            if (timeSlider.isPressed())
+            if (timeSlider.isPressed() && currentMediaPlayer != null)
                 currentMediaPlayer.seek(currentMediaPlayer.getMedia().getDuration().multiply(timeSlider.getValue() / 100));
         });
     }
@@ -65,20 +65,28 @@ public class Controller {
     }
 
     public void onPlay(ActionEvent event) {
+        if (currentMediaPlayer == null) return;
+
         currentMediaPlayer.play();
 
         currentMediaPlayer.currentTimeProperty().addListener(observable -> updateChanges());
     }
 
     public void onDragDone(DragEvent dragEvent) {
+        if (currentMediaPlayer == null) return;
+
         currentMediaPlayer.seek(currentMediaPlayer.getMedia().getDuration().multiply(timeSlider.getValue() / 100));
     }
 
     public void onPause(ActionEvent event) {
+        if (currentMediaPlayer == null) return;
+
         currentMediaPlayer.pause();
     }
 
     public void onStop(ActionEvent event) {
+        if (currentMediaPlayer == null) return;
+
         currentMediaPlayer.stop();
     }
 

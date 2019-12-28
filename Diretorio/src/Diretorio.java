@@ -25,7 +25,11 @@ public class Diretorio implements Constants {
         ObjectInputStream in;
 
         packet = new DatagramPacket(new byte[MAX_SIZE], MAX_SIZE);
-        socket.receive(packet);
+        try {
+            socket.receive(packet);
+        } catch (SocketTimeoutException e) {
+            throw new SocketTimeoutException();
+        }
 
         in = new ObjectInputStream(new ByteArrayInputStream(packet.getData(), 0, packet.getLength()));
 
@@ -36,10 +40,6 @@ public class Diretorio implements Constants {
             return "";
         }
 
-        if (message == null)
-            return null;
-
-        System.out.println("[Proxy] Message received: " + message);
         return message;
     }
 
@@ -124,10 +124,10 @@ public class Diretorio implements Constants {
 
             try {
                 String reply = waitDatagram();
-            } catch (SocketException e) {
+            } catch (SocketTimeoutException e) {
                 System.out.println("[Proxy] Removing server at " + servers.get(i).getAddress().getHostAddress() + " for inactivity");
                 if (currentServer == servers.size() - 1) currentServer = 0;
-                servers.remove(i);
+                servers.remove(i--);
             }
         }
     }
