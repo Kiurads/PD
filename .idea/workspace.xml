@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="dc48c10f-e5bf-4de5-90cf-75ee3c44e655" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/MyMessages.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/MyMessages.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DB_stuff.txt" beforeDir="false" afterPath="$PROJECT_DIR$/DB_stuff.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Diretorio/src/Diretorio.java" beforeDir="false" afterPath="$PROJECT_DIR$/Diretorio/src/Diretorio.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Diretorio/src/MyMessages.java" beforeDir="false" afterPath="$PROJECT_DIR$/Diretorio/src/MyMessages.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Server/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/.idea/uiDesigner.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Server/.idea/uiDesigner.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/out/production/Server/META-INF/Server.kotlin_module" beforeDir="false" afterPath="$PROJECT_DIR$/Server/out/production/Server/META-INF/Server.kotlin_module" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/src/Database.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/Database.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/src/MyMessages.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/MyMessages.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/src/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/ServerMain.java" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1VZDrZ3FOk1Nfk7UCRBuBN46nj7" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Client" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="dc48c10f-e5bf-4de5-90cf-75ee3c44e655" name="Default Changelist" comment="" />
+      <created>1577451922156</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1577451922156</updated>
+      <workItem from="1577451926675" duration="58000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

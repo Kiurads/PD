@@ -23,11 +23,16 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
-    <loaded-nodes />
+    <loaded-nodes>
+      <connection connection-id="0d74c79a-e629-49a3-b8e7-1e95d316dfc4">
+        <schema name="PD_Streamer" object-types="view, table, function, procedure, column, dataset trigger, index, constraint" />
+      </connection>
+    </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="0d74c79a-e629-49a3-b8e7-1e95d316dfc4">
-      <console name="PD_Streamer" type="STANDARD" schema="PD_Streamer" session="Main" />
+      <console name="PD_Streamer" type="STANDARD" schema="PD_Streamer" session="Main">insert into `user`(username, `password`, fullname, song_id, table3_id)
+values ('GuiCurado', 'abc123', 'Guilherme Curado', null, null)</console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
