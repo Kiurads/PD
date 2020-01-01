@@ -1,6 +1,6 @@
 package model;
 
-import GUI.Controller;
+import UI.Controllers.Controller;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -18,7 +18,7 @@ public class ClientApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/FXML/GUI.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/UI/FXML/ISECify.fxml"));
         Parent root = loader.load();
         Controller controller = loader.getController();
         primaryStage.setOnHidden(event -> {

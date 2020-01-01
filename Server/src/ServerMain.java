@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.InetAddress;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class ServerMain {
@@ -15,6 +16,10 @@ public class ServerMain {
             server.start();
         } catch (IOException | InterruptedException e) {
             System.out.println("No proxy available");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 }

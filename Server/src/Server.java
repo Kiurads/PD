@@ -1,5 +1,5 @@
 import client.ClientThread;
-import database.DatabaseConnector;
+import database.Database;
 import proxy.constants.Constants;
 import proxy.ProxyThread;
 
@@ -14,15 +14,17 @@ import java.util.Scanner;
 public class Server implements Constants {
     private List<ClientThread> clientThreads;
     private ProxyThread proxyThread;
+    private Database database;
 
-    public Server(InetAddress localHost) throws IOException {
+    public Server(InetAddress address) throws IOException, SQLException, ClassNotFoundException {
+        database = new Database();
         clientThreads = new ArrayList<>();
-        proxyThread = new ProxyThread(InetAddress.getLocalHost(), clientThreads);
+        proxyThread = new ProxyThread(address, clientThreads, database);
 
         proxyThread.start();
     }
 
-    public void start() throws InterruptedException {
+    public void start() throws InterruptedException, SQLException {
         Scanner scanner = new Scanner(System.in);
         String input = "";
 
@@ -30,6 +32,7 @@ public class Server implements Constants {
             input = scanner.nextLine();
         }
 
+        database.close();
         proxyThread.terminate();
 
         for (ClientThread thread : clientThreads) {

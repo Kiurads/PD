@@ -1,6 +1,7 @@
 package proxy;
 
 import client.ClientThread;
+import database.Database;
 import proxy.constants.Constants;
 import proxy.constants.MessageTypes;
 
@@ -10,12 +11,14 @@ import java.util.List;
 
 public class ProxyThread extends Thread implements Constants {
     List<ClientThread> clientThreads;
+    Database database;
     Proxy proxy;
     boolean running;
 
-    public ProxyThread(InetAddress proxyAddress, List<ClientThread> clientThreads) throws IOException {
+    public ProxyThread(InetAddress proxyAddress, List<ClientThread> clientThreads, Database database) throws IOException {
         proxy = new Proxy(proxyAddress);
         this.clientThreads = clientThreads;
+        this.database = database;
 
         running = true;
     }
@@ -40,7 +43,7 @@ public class ProxyThread extends Thread implements Constants {
                     case MessageTypes.REQUEST_SERVER:
                         System.out.println("[Proxy] Server requested");
 
-                        ClientThread thread = new ClientThread();
+                        ClientThread thread = new ClientThread(database);
                         proxy.send(String.valueOf(thread.getPort()));
 
                         thread.start();

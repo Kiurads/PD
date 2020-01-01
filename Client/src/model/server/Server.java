@@ -66,8 +66,12 @@ public class Server implements Constants {
         fileInputStream.close();
     }
 
-    public boolean registerUser(String username, String password) { //TODO
-        return false;
+    public void registerUser(String registerInfo) throws IOException {
+        sendMessage(registerInfo);
+    }
+
+    public void login(String loginInfo) {
+
     }
 
     @Override

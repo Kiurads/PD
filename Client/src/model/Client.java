@@ -17,24 +17,20 @@ public class Client implements MessageTypes {
         server.connect();
     }
 
-    public void register(String username, String password) {
-        boolean success;
-
-        success = server.registerUser(username, password);
+    public void register(String registerInfo) throws IOException {
+        server.registerUser(registerInfo);
     }
 
     public void login(String username, String password) {
-        boolean success;
-
-        success = server.registerUser(username, password);
+        server.login(username);
     }
 
     public Server getServer() {
         return server;
     }
 
-    public void upload(String fileName, String filePath) throws IOException {
-        server.sendMessage(UPLOAD + "\n" + fileName);
+    public void upload(String songInfo, String filePath) throws IOException {
+        server.sendMessage(songInfo);
         server.upload(filePath);
     }
 
@@ -50,5 +46,9 @@ public class Client implements MessageTypes {
         proxy.close();
 
         server.close();
+    }
+
+    public String receiveMessage() throws IOException, ClassNotFoundException {
+        return server.receiveMessage();
     }
 }

@@ -1,6 +1,5 @@
 package database;
 
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -17,11 +16,7 @@ public class DatabaseConnector {
 
     public DatabaseConnector() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        try {
-            createDatabase();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        createDatabase();
 
         connection = DriverManager.getConnection(DB_CONNECTION, USERNAME, PASSWORD);
         System.out.println("[Database] Connection established");
@@ -47,13 +42,7 @@ public class DatabaseConnector {
         return connection;
     }
 
-    public static void main(String[] args) {
-        try {
-            DatabaseConnector db = new DatabaseConnector();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+    public void close() throws SQLException {
+        connection.close();
     }
 }
