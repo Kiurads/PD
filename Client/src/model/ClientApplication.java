@@ -1,6 +1,6 @@
 package model;
 
-import UI.Controllers.Controller;
+import UI.controllers.Controller;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;

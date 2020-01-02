@@ -40,7 +40,7 @@ public class Client implements Constants {
     }
 
     public String getFile(String fileName) throws IOException {
-        //TODO if (userID == -1) return false;
+        if (userID == -1) return null;
 
         String filePath;
         File localPath;
@@ -64,7 +64,7 @@ public class Client implements Constants {
 
         fileOutputStream.close();
 
-        return localPath + File.separator + fileName;
+        return ".\\Uploads" + File.separator + File.separator + fileName;
     }
 
     public int getUserID() {

@@ -11,7 +11,7 @@ public class DatabaseConnector {
     private Connection connection;
     public static final String USERNAME = "root";
     public static final String PASSWORD = "root";
-    public static final String CONNECTION = "jdbc:mysql://localhost:3306/";
+    public static final String MAIN_CONNECTION = "jdbc:mysql://localhost:3306/";
     public static final String DB_CONNECTION = "jdbc:mysql://localhost:3306/PD_Streamer?allowMultipleQueries=true";
 
     public DatabaseConnector() throws SQLException, ClassNotFoundException {
@@ -23,9 +23,9 @@ public class DatabaseConnector {
     }
 
     public void createDatabase() throws SQLException {
-        connection = DriverManager.getConnection(CONNECTION, USERNAME, PASSWORD);
+        connection = DriverManager.getConnection(MAIN_CONNECTION, USERNAME, PASSWORD);
         Statement statement = connection.createStatement();
-        statement.executeUpdate(DATABASECREATION);
+        statement.executeUpdate(DATABASE_CREATION);
 
         connection = DriverManager.getConnection(DB_CONNECTION, USERNAME, PASSWORD);
         statement = connection.createStatement();

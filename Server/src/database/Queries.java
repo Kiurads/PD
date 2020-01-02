@@ -1,7 +1,7 @@
 package database;
 
 public interface Queries {
-    String DATABASECREATION = "CREATE SCHEMA IF NOT EXISTS `PD_Streamer` DEFAULT CHARACTER SET utf8 ;\n";
+    String DATABASE_CREATION = "CREATE SCHEMA IF NOT EXISTS `PD_Streamer` DEFAULT CHARACTER SET utf8 ;\n";
 
 
     String CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS `PD_Streamer`.`User` (\n" +
@@ -10,7 +10,8 @@ public interface Queries {
             "  `password` VARCHAR(45) NOT NULL,\n" +
             "  `fullname` VARCHAR(45) NOT NULL,\n" +
             "  PRIMARY KEY (`id`),\n" +
-            "  UNIQUE INDEX `id_UNIQUE` (`id` ASC))\n" +
+            "  UNIQUE INDEX `id_UNIQUE` (`id` ASC),\n" +
+            "  UNIQUE INDEX `username_UNIQUE` (`username` ASC))\n" +
             "  ENGINE = InnoDB;";
 
     String CREATE_SONG_TABLE = "CREATE TABLE IF NOT EXISTS `PD_Streamer`.`Song` (\n" +

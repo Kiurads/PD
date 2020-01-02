@@ -1,36 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
-<?import javafx.scene.media.*?>
-<?import javafx.scene.input.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.input.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
-<?import javafx.scene.text.*?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.Controllers.Controller">
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.controllers.Controller">
     <children>
         <MenuBar VBox.vgrow="NEVER">
-            <menus>
-                <Menu mnemonicParsing="false" text="File">
-                    <items>
-                        <MenuItem fx:id="upload" mnemonicParsing="false" onAction="#onUpload" text="Upload">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="U" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
-                            </accelerator>
-                        </MenuItem>
-                    </items>
-                </Menu>
-            <Menu mnemonicParsing="false" text="Session">
-              <items>
-                <MenuItem fx:id="loginItem" mnemonicParsing="false" onAction="#onLogin" text="Login" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="registerItem" mnemonicParsing="false" onAction="#onRegister" text="Register" />
-              </items>
+            <Menu mnemonicParsing="false" text="File">
+                <MenuItem fx:id="uploadItem" mnemonicParsing="false" onAction="#onUpload" text="Upload">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="U" control="UP" meta="UP" shift="DOWN" shortcut="UP"/>
+                    </accelerator>
+                </MenuItem>
             </Menu>
-            </menus>
+            <Menu mnemonicParsing="false" text="Session">
+                <MenuItem fx:id="loginItem" mnemonicParsing="false" onAction="#onLogin" text="Login"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="registerItem" mnemonicParsing="false" onAction="#onRegister" text="Register"/>
+            </Menu>
         </MenuBar>
         <BorderPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
             <bottom>

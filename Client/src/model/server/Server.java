@@ -1,6 +1,6 @@
 package model.server;
 
-import model.MessageTypes;
+import model.constants.MessageTypes;
 import model.server.Constants.Constants;
 
 import java.io.*;
@@ -70,8 +70,8 @@ public class Server implements Constants {
         sendMessage(registerInfo);
     }
 
-    public void login(String loginInfo) {
-
+    public void login(String loginInfo) throws IOException {
+        sendMessage(loginInfo);
     }
 
     @Override

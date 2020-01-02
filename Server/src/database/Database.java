@@ -25,7 +25,6 @@ public class Database {
     }
 
     public int findUser(String username, String password) throws SQLException {
-        Statement statement = null;
         String sql = "SELECT id, username, password FROM user";
 
         statement = db.getConnection().createStatement();
@@ -34,10 +33,10 @@ public class Database {
 
         while (result.next()) {
             int id = Integer.parseInt(result.getString("id"));
-            String qUsername = result.getString("username");
-            String qPassword = result.getString("password");
+            String queryUsername = result.getString("username");
+            String queryPassword = result.getString("password");
 
-            if (username.equals(qUsername) && password.equals(qPassword)) {
+            if (username.equals(queryUsername) && password.equals(queryPassword)) {
                 System.out.println("[Database] User " + username + " found");
 
                 statement.close();

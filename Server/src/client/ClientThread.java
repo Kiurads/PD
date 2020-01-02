@@ -59,6 +59,23 @@ public class ClientThread extends Thread {
                     }
                     break;
 
+                case MessageTypes.LOGIN:
+                    try {
+                        client.setUserID(database.findUser(message[1], message[2]));
+
+                        if (client.getUserID() != -1) client.send(MessageTypes.SUCCESS);
+                        else client.send(MessageTypes.FAILURE);
+                    } catch (SQLException e) {
+                        try {
+                            client.send(MessageTypes.FAILURE);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
                 case MessageTypes.UPLOAD:
                     try {
                         String filePath;
