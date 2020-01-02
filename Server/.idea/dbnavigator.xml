@@ -26,16 +26,15 @@
     <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
-    <connection id="0d74c79a-e629-49a3-b8e7-1e95d316dfc4">
-      <console name="PD_Streamer" type="STANDARD" schema="PD_Streamer" session="Main"><![CDATA[insert into `user`(username, `password`, fullname, song_id, table3_id)
-values ('GuiCurado', 'abc123', 'Guilherme Curado', null, null)]]></console>
+    <connection id="e62a41bc-5617-4b64-878f-23b0455b4676">
+      <console name="Connection" type="STANDARD" schema="mysql" session="Main" />
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
-    <connection id="0d74c79a-e629-49a3-b8e7-1e95d316dfc4" />
+    <connection id="e62a41bc-5617-4b64-878f-23b0455b4676" />
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />
@@ -60,9 +59,9 @@ values ('GuiCurado', 'abc123', 'Guilherme Curado', null, null)]]></console>
   </component>
   <component name="DBNavigator.Project.Settings">
     <connections>
-      <connection id="0d74c79a-e629-49a3-b8e7-1e95d316dfc4" active="true">
+      <connection id="e62a41bc-5617-4b64-878f-23b0455b4676" active="true">
         <database>
-          <name value="PD_Streamer" />
+          <name value="Connection" />
           <description value="" />
           <database-type value="MYSQL" />
           <config-type value="BASIC" />
@@ -73,7 +72,7 @@ values ('GuiCurado', 'abc123', 'Guilherme Curado', null, null)]]></console>
           <url-type value="DATABASE" />
           <host value="localhost" />
           <port value="3306" />
-          <database value="PD_Streamer" />
+          <database value="mysql" />
           <type value="USER_PASSWORD" />
           <user value="root" />
           <deprecated-pwd value="cm9vdA==" />

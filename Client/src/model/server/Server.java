@@ -74,6 +74,10 @@ public class Server implements Constants {
         sendMessage(loginInfo);
     }
 
+    public void logout() throws IOException {
+        sendMessage(MessageTypes.LOGOUT);
+    }
+
     @Override
     public String toString() {
         return "Server address:" + address + '\n' +

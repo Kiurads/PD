@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextInputDialog;
@@ -32,6 +33,7 @@ public class Controller {
     public MenuItem registerItem;
 
     public Slider timeSlider;
+    public MenuItem logoutItem;
 
     private Client client;
 
@@ -130,7 +132,29 @@ public class Controller {
 
             loginItem.setDisable(true);
             registerItem.setDisable(true);
+            logoutItem.setDisable(false);
             uploadItem.setDisable(false);
+        }
+
+        AlertUtils.showAlert(reply);
+    }
+
+    public void onLogout(ActionEvent event) throws IOException, ClassNotFoundException {
+        Optional<ButtonType> choice = AlertUtils.getConfirmation();
+
+        if (!choice.isPresent() || choice.get() != ButtonType.OK) return;
+
+        client.logout();
+
+        String reply = client.receiveMessage();
+
+        if (reply.equals(MessageTypes.SUCCESS)) {
+            client.resetDetails();
+
+            loginItem.setDisable(false);
+            registerItem.setDisable(false);
+            logoutItem.setDisable(true);
+            uploadItem.setDisable(true);
         }
 
         AlertUtils.showAlert(reply);
@@ -220,4 +244,5 @@ public class Controller {
     public void shutdown() throws IOException {
         if (client != null) client.shutdown();
     }
+
 }

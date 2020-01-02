@@ -25,11 +25,11 @@ public class Database {
     }
 
     public int findUser(String username, String password) throws SQLException {
-        String sql = "SELECT id, username, password FROM user";
+        query = "SELECT id, username, password FROM user";
 
         statement = db.getConnection().createStatement();
 
-        ResultSet result = statement.executeQuery(sql);
+        ResultSet result = statement.executeQuery(query);
 
         while (result.next()) {
             int id = Integer.parseInt(result.getString("id"));

@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class ClientThread extends Thread {
-    Client client;
-    Database database;
-    boolean running;
+    private Client client;
+    private Database database;
+    private boolean running;
 
     public ClientThread(Database database) throws IOException {
         client = new Client();
@@ -41,12 +41,11 @@ public class ClientThread extends Thread {
                 break;
             }
 
-            System.out.println("[ClientThread:" + getId() + "] " + message[0]);
-
             switch (message[0]) {
                 case MessageTypes.REGISTER:
                     try {
                         database.addUser(message[1], message[2], message[3]);
+                        System.out.println("[Client:" + client.getServerPort() + "] Register successful");
                         client.send(MessageTypes.SUCCESS);
                     } catch (SQLException e) {
                         try {
@@ -63,8 +62,11 @@ public class ClientThread extends Thread {
                     try {
                         client.setUserID(database.findUser(message[1], message[2]));
 
-                        if (client.getUserID() != -1) client.send(MessageTypes.SUCCESS);
-                        else client.send(MessageTypes.FAILURE);
+                        if (client.getUserID() != -1) {
+                            client.send(MessageTypes.SUCCESS);
+
+                            System.out.println("[Client:" + client.getServerPort() + "] Login successful");
+                        } else client.send(MessageTypes.FAILURE);
                     } catch (SQLException e) {
                         try {
                             client.send(MessageTypes.FAILURE);
@@ -89,7 +91,7 @@ public class ClientThread extends Thread {
                                     Integer.parseInt(message[6]),
                                     filePath);
 
-                            System.out.println("[ClientThread:" + getId() + "] Success");
+                            System.out.println("[Client:" + client.getServerPort() + "] Uploaded file");
                             client.send(MessageTypes.SUCCESS);
                             break;
                         }
@@ -99,6 +101,18 @@ public class ClientThread extends Thread {
                         e.printStackTrace();
                     }
                     break;
+
+                case MessageTypes.LOGOUT:
+                    try {
+                        client.setUserID(-1);
+
+                        System.out.println("[Client:" + client.getServerPort() + "] Logout successful");
+                        client.send(MessageTypes.SUCCESS);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
                 case MessageTypes.CLOSE:
                     running = false;
                     break;
@@ -108,10 +122,10 @@ public class ClientThread extends Thread {
         try {
             client.close();
         } catch (IOException e) {
-            System.out.println("[Error] [Client:" + getId() + "] " + e.getCause());
+            System.out.println("[Error] [Client:" + client.getServerPort() + "] " + e.getCause());
         }
 
-        System.out.println("[ClientThread:" + getId() + "] Closing connection");
+        System.out.println("[Client:" + client.getServerPort() + "] Closing connection");
     }
 
     public int getPort() {

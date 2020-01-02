@@ -30,6 +30,10 @@ public class Client implements MessageTypes {
         server.login(loginInfo);
     }
 
+    public void logout() throws IOException {
+        server.logout();
+    }
+
     public String receiveMessage() throws IOException, ClassNotFoundException {
         return server.receiveMessage();
     }
@@ -37,6 +41,10 @@ public class Client implements MessageTypes {
     public void upload(String songInfo, String filePath) throws IOException {
         server.sendMessage(songInfo);
         server.upload(filePath);
+    }
+
+    public void resetDetails() {
+        username = password = null;
     }
 
     public void reconnect() throws IOException, ClassNotFoundException {
