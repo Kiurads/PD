@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.input.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="UI.controllers.Controller">
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.controllers.Controller">
     <children>
         <MenuBar VBox.vgrow="NEVER">
             <menus>
                 <Menu mnemonicParsing="false" text="Session">
                     <items>
-                        <MenuItem fx:id="loginItem" mnemonicParsing="false" onAction="#onLogin" text="Login"/>
-                        <MenuItem fx:id="logoutItem" disable="true" mnemonicParsing="false" onAction="#onLogout"
-                                  text="Logout"/>
-                        <SeparatorMenuItem mnemonicParsing="false"/>
-                        <MenuItem fx:id="registerItem" mnemonicParsing="false" onAction="#onRegister" text="Register"/>
+                        <MenuItem fx:id="loginItem" mnemonicParsing="false" onAction="#onLogin" text="Login" />
+                        <MenuItem fx:id="logoutItem" disable="true" mnemonicParsing="false" onAction="#onLogout" text="Logout" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="registerItem" mnemonicParsing="false" onAction="#onRegister" text="Register" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem fx:id="uploadItem" mnemonicParsing="false" onAction="#onUpload" text="Upload">
+                        <MenuItem fx:id="uploadItem" mnemonicParsing="false" onAction="#onUpload" text="Upload song">
                             <accelerator>
-                                <KeyCodeCombination alt="UP" code="U" control="UP" meta="UP" shift="DOWN"
-                                                    shortcut="UP"/>
+                                <KeyCodeCombination alt="UP" code="U" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                             </accelerator>
                         </MenuItem>
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="createPlaylistItem" disable="true" mnemonicParsing="false" onAction="#onCreatePlaylist" text="Create playlist" />
+                  <MenuItem fx:id="deletePlaylistItem" disable="true" mnemonicParsing="false" onAction="#onDeletePlaylist" text="Delete playlist" />
                     </items>
                 </Menu>
             </menus>
@@ -42,7 +41,7 @@
                                     <children>
                                         <Slider fx:id="timeSlider" onDragDone="#onDragDone" HBox.hgrow="ALWAYS">
                                             <padding>
-                                                <Insets left="10.0" right="10.0"/>
+                                                <Insets left="10.0" right="10.0" />
                                             </padding>
                                         </Slider>
                                     </children>
@@ -51,49 +50,44 @@
                         </VBox>
                         <HBox alignment="CENTER" prefHeight="45.0" prefWidth="568.0" VBox.vgrow="NEVER">
                             <children>
-                                <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="30.0"
-                                        style="-fx-background-image: url('UI/images/previous.png'); -fx-background-size: 25px; -fx-background-repeat: no-repeat; -fx-background-position: 90%;">
+                                <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="30.0" style="-fx-background-image: url('UI/images/previous.png'); -fx-background-size: 25px; -fx-background-repeat: no-repeat; -fx-background-position: 90%;">
                                     <HBox.margin>
-                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                 </Button>
-                                <Button mnemonicParsing="false" onAction="#onPause" prefHeight="25.0" prefWidth="30.0"
-                                        style="-fx-background-image: url('UI/images/pause.png'); -fx-background-size: 30px; -fx-background-repeat: no-repeat; -fx-background-position: 90%;">
+                                <Button mnemonicParsing="false" onAction="#onPause" prefHeight="25.0" prefWidth="30.0" style="-fx-background-image: url('UI/images/pause.png'); -fx-background-size: 30px; -fx-background-repeat: no-repeat; -fx-background-position: 90%;">
                                     <HBox.margin>
-                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                 </Button>
-                                <Button mnemonicParsing="false" onAction="#onPlay" prefHeight="25.0" prefWidth="32.0"
-                                        style="-fx-background-image: url('UI/images/play.png'); -fx-background-size: 30px; -fx-background-repeat: no-repeat; -fx-background-position: 90%;">
+                                <Button mnemonicParsing="false" onAction="#onPlay" prefHeight="25.0" prefWidth="32.0" style="-fx-background-image: url('UI/images/play.png'); -fx-background-size: 30px; -fx-background-repeat: no-repeat; -fx-background-position: 90%;">
                                     <HBox.margin>
-                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                 </Button>
-                                <Button mnemonicParsing="false" onAction="#onStop" prefHeight="25.0" prefWidth="30.0"
-                                        style="-fx-background-image: url('UI/images/stop.png'); -fx-background-repeat: no-repeat; -fx-background-size: 30px; -fx-background-position: 90%;">
+                                <Button mnemonicParsing="false" onAction="#onStop" prefHeight="25.0" prefWidth="30.0" style="-fx-background-image: url('UI/images/stop.png'); -fx-background-repeat: no-repeat; -fx-background-size: 30px; -fx-background-position: 90%;">
                                     <HBox.margin>
-                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                 </Button>
-                                <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="30.0"
-                                        style="-fx-background-image: url('UI/images/next.png'); -fx-background-size: 25px; -fx-background-repeat: no-repeat; -fx-background-position: 90%;">
+                                <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="30.0" style="-fx-background-image: url('UI/images/next.png'); -fx-background-size: 25px; -fx-background-repeat: no-repeat; -fx-background-position: 90%;">
                                     <HBox.margin>
-                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                 </Button>
                             </children>
                         </HBox>
                     </children>
                     <BorderPane.margin>
-                        <Insets top="10.0"/>
+                        <Insets top="10.0" />
                     </BorderPane.margin>
                 </VBox>
             </bottom>
             <left>
-                <ListView fx:id="playlistList" prefHeight="307.0" prefWidth="150.0" BorderPane.alignment="CENTER"/>
+                <ListView fx:id="playlistList" prefHeight="307.0" prefWidth="150.0" BorderPane.alignment="CENTER" />
             </left>
             <center>
-                <ListView fx:id="songList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
+                <ListView fx:id="songList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
             </center>
         </BorderPane>
     </children>

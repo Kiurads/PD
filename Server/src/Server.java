@@ -36,11 +36,7 @@ public class Server implements Constants {
         proxyThread.terminate();
 
         for (ClientThread thread : clientThreads) {
-            try {
-                thread.terminate();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            thread.terminate();
 
             thread.join();
         }

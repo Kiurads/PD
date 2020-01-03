@@ -18,14 +18,13 @@ public class ClientThread extends Thread {
         running = true;
     }
 
-    public void terminate() throws IOException {
+    public void terminate() {
         running = false;
-        client.close();
     }
 
     @Override
     public void run() {
-        String[] message;
+        String[] message = new String[0];
 
         try {
             client.accept();
@@ -38,7 +37,7 @@ public class ClientThread extends Thread {
             try {
                 message = client.receive().split("\n");
             } catch (IOException | ClassNotFoundException e) {
-                break;
+                e.printStackTrace();
             }
 
             switch (message[0]) {
@@ -51,10 +50,10 @@ public class ClientThread extends Thread {
                         try {
                             client.send(MessageTypes.FAILURE);
                         } catch (IOException ex) {
-                            ex.printStackTrace();
+                            terminate();
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        terminate();
                     }
                     break;
 
@@ -71,10 +70,10 @@ public class ClientThread extends Thread {
                         try {
                             client.send(MessageTypes.FAILURE);
                         } catch (IOException ex) {
-                            ex.printStackTrace();
+                            terminate();
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        terminate();
                     }
                     break;
 
@@ -97,8 +96,64 @@ public class ClientThread extends Thread {
                         }
 
                         client.send(MessageTypes.FAILURE);
-                    } catch (IOException | SQLException e) {
-                        e.printStackTrace();
+                    } catch (SQLException e) {
+                        try {
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
+                        } catch (IOException ex) {
+                            terminate();
+                        }
+                    } catch (IOException e) {
+                        terminate();
+                    }
+                    break;
+
+                case MessageTypes.PLAYLISTS:
+                    try {
+                        client.send(MessageTypes.SUCCESS + "\n" + database.getPlaylists(client.getUserID()));
+                    } catch (SQLException e) {
+                        try {
+                            client.send(MessageTypes.FAILURE + e.getMessage());
+                        } catch (IOException ex) {
+                            terminate();
+                        }
+                    } catch (IOException e) {
+                        terminate();
+                    }
+                    break;
+
+                case MessageTypes.PLAYLIST_CREATE:
+                    try {
+                        database.addPlaylist(message[1], client.getUserID());
+
+                        System.out.println("[Client:" + client.getServerPort() + "] Created playlist");
+                        client.send(MessageTypes.SUCCESS);
+                        break;
+                    } catch (SQLException e) {
+                        try {
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
+                        } catch (IOException ex) {
+                            terminate();
+                        }
+                    } catch (IOException e) {
+                        terminate();
+                    }
+                    break;
+
+                case MessageTypes.PLAYLIST_DELETE:
+                    try {
+                        database.removePlaylist(Integer.parseInt(message[1]));
+
+                        System.out.println("[Client:" + client.getServerPort() + "] Deleted playlist");
+                        client.send(MessageTypes.SUCCESS);
+                        break;
+                    } catch (SQLException e) {
+                        try {
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
+                        } catch (IOException ex) {
+                            terminate();
+                        }
+                    } catch (IOException e) {
+                        terminate();
                     }
                     break;
 
@@ -109,7 +164,7 @@ public class ClientThread extends Thread {
                         System.out.println("[Client:" + client.getServerPort() + "] Logout successful");
                         client.send(MessageTypes.SUCCESS);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        terminate();
                     }
                     break;
 

@@ -90,4 +90,8 @@ public class Server implements Constants {
         socketOut.close();
         socket.close();
     }
+
+    public void getPlaylists() throws IOException {
+        sendMessage(MessageTypes.PLAYLISTS);
+    }
 }

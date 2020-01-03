@@ -23,11 +23,16 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
-    <loaded-nodes />
+    <loaded-nodes>
+      <connection connection-id="e62a41bc-5617-4b64-878f-23b0455b4676">
+        <schema name="mysql" object-types="function" />
+        <schema name="pd_streamer" object-types="function, constraint, index, dataset trigger, procedure, table, column, view" />
+      </connection>
+    </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="e62a41bc-5617-4b64-878f-23b0455b4676">
-      <console name="Connection" type="STANDARD" schema="mysql" session="Main" />
+      <console name="Connection" type="STANDARD" schema="pd_streamer" session="Main"><![CDATA[select * from song]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
@@ -35,6 +40,9 @@
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="e62a41bc-5617-4b64-878f-23b0455b4676" />
+  </component>
+  <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="e62a41bc-5617-4b64-878f-23b0455b4676" dataset="pd_streamer.song" active-filter-id="" />
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />

@@ -1,19 +1,16 @@
 package UI.controllers;
 
-import UI.AddSongController;
-import UI.AlertUtils;
+import UI.utils.AlertUtils;
+import UI.utils.DialogUtils;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -24,20 +21,24 @@ import model.constants.MessageTypes;
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class Controller {
-    public MenuItem uploadItem;
     public MenuItem loginItem;
+    public MenuItem logoutItem;
     public MenuItem registerItem;
 
-    public Slider timeSlider;
-    public MenuItem logoutItem;
-
-    private Client client;
+    public MenuItem uploadItem;
+    public MenuItem createPlaylistItem;
+    public MenuItem deletePlaylistItem;
+    public ListView<String> playlistList;
 
     private MediaPlayer currentMediaPlayer;
+    public Slider timeSlider;
+
+    private Client client;
 
     @FXML
     public void initialize() {
@@ -62,30 +63,20 @@ public class Controller {
         uploadItem.setDisable(true);
     }
 
-    public void onRegister(ActionEvent event) throws IOException, ClassNotFoundException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/UI/FXML/Register.fxml"));
-        Parent parent = fxmlLoader.load();
-        RegisterController dialogController = fxmlLoader.getController();
+    public void onRegister() throws IOException, ClassNotFoundException {
+        String registerDetails = DialogUtils.getRegisterDetails();
 
-        Scene scene = new Scene(parent, 400, 200);
-        Stage stage = new Stage();
-        stage.setResizable(false);
-        stage.setTitle("Register");
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setScene(scene);
-        stage.showAndWait();
+        if (registerDetails == null) return;
 
-        if (dialogController.getRegisterDetails() == null) return;
-
-        String registerInfo = MessageTypes.REGISTER + "\n" + dialogController.getRegisterDetails();
+        registerDetails = MessageTypes.REGISTER + "\n" + registerDetails;
 
         try {
-            client.register(registerInfo);
+            client.register(registerDetails);
         } catch (SocketException e) {
             try {
                 client.reconnect();
 
-                client.register(registerInfo);
+                client.register(registerDetails);
             } catch (IOException | ClassNotFoundException ex) {
                 AlertUtils.showException(ex);
                 return;
@@ -95,22 +86,12 @@ public class Controller {
         AlertUtils.showAlert(client.receiveMessage());
     }
 
-    public void onLogin(ActionEvent event) throws IOException, ClassNotFoundException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/UI/FXML/Login.fxml"));
-        Parent parent = fxmlLoader.load();
-        LoginController dialogController = fxmlLoader.getController();
+    public void onLogin() throws IOException, ClassNotFoundException {
+        String loginDetails = DialogUtils.getLoginDetails();
 
-        Scene scene = new Scene(parent, 400, 200);
-        Stage stage = new Stage();
-        stage.setResizable(false);
-        stage.setTitle("Register");
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setScene(scene);
-        stage.showAndWait();
+        if (loginDetails == null) return;
 
-        if (dialogController.getLoginDetails() == null) return;
-
-        String loginInfo = MessageTypes.LOGIN + "\n" + dialogController.getLoginDetails();
+        String loginInfo = MessageTypes.LOGIN + "\n" + loginDetails;
 
         try {
             client.login(loginInfo);
@@ -128,18 +109,22 @@ public class Controller {
         String reply = client.receiveMessage();
 
         if (reply.equals(MessageTypes.SUCCESS)) {
-            client.setDetails(dialogController.getLoginDetails());
+            client.setDetails(loginDetails);
 
             loginItem.setDisable(true);
             registerItem.setDisable(true);
             logoutItem.setDisable(false);
             uploadItem.setDisable(false);
+            createPlaylistItem.setDisable(false);
+            deletePlaylistItem.setDisable(false);
+
+            updatePlaylists();
         }
 
         AlertUtils.showAlert(reply);
     }
 
-    public void onLogout(ActionEvent event) throws IOException, ClassNotFoundException {
+    public void onLogout() throws IOException, ClassNotFoundException {
         Optional<ButtonType> choice = AlertUtils.getConfirmation();
 
         if (!choice.isPresent() || choice.get() != ButtonType.OK) return;
@@ -155,6 +140,10 @@ public class Controller {
             registerItem.setDisable(false);
             logoutItem.setDisable(true);
             uploadItem.setDisable(true);
+            createPlaylistItem.setDisable(true);
+            deletePlaylistItem.setDisable(true);
+
+            playlistList.setItems(null);
         }
 
         AlertUtils.showAlert(reply);
@@ -167,48 +156,96 @@ public class Controller {
 
         if (file == null) return;
 
-        Media mediaFile = new Media(file.toURI().toString());
-        MediaPlayer player = new MediaPlayer(mediaFile);
+        String songDetails = DialogUtils.getSongDetails();
 
-        player.setOnReady(new Runnable() {
-            @Override
-            public void run() {}
-        });
+        if (songDetails == null) return;
 
-        int duration = (int) mediaFile.getDuration().toSeconds();
-
-        System.out.println(duration);
-
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/UI/FXML/AddSong.fxml"));
-        Parent parent = fxmlLoader.load();
-        AddSongController dialogController = fxmlLoader.getController();
-        dialogController.setSongDuration(duration);
-
-        Scene scene = new Scene(parent, 400, 300);
-        Stage stage = new Stage();
-        stage.setResizable(false);
-        stage.setTitle("Upload Song");
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setScene(scene);
-        stage.showAndWait();
-
-        if (dialogController.getSongDetails() == null) return;
-
-        String songInfo = MessageTypes.UPLOAD + "\n" + dialogController.getSongDetails() + file.getName();
+        songDetails = MessageTypes.UPLOAD + "\n" + songDetails + file.getName();
 
         try {
-            client.upload(songInfo, file.getCanonicalPath());
+            client.upload(songDetails, file.getCanonicalPath());
         } catch (SocketException e) {
             try {
                 client.reconnect();
 
-                client.upload(songInfo, file.getCanonicalPath());
+                client.upload(songDetails, file.getCanonicalPath());
             } catch (IOException | ClassNotFoundException ex) {
                 AlertUtils.showException(ex);
             }
         }
 
         AlertUtils.showAlert(client.receiveMessage());
+    }
+
+    public void onCreatePlaylist() throws IOException, ClassNotFoundException {
+        String playlistName = DialogUtils.getPlaylistName();
+
+        if (playlistName == null) return;
+
+        playlistName = MessageTypes.PLAYLIST_CREATE + "\n" + playlistName;
+
+        try {
+            client.createPlaylist(playlistName);
+        } catch (SocketException e) {
+            try {
+                client.reconnect();
+
+                client.createPlaylist(playlistName);
+            } catch (IOException | ClassNotFoundException ex) {
+                AlertUtils.showException(ex);
+            }
+        }
+
+        AlertUtils.showAlert(client.receiveMessage());
+
+        updatePlaylists();
+    }
+
+    private void updatePlaylists() throws IOException, ClassNotFoundException {
+        String playlists = client.getPlaylistNames();
+        String[] message = playlists.split("\n");
+
+        if (message[0].equals(MessageTypes.FAILURE)) {
+            AlertUtils.showAlert(playlists);
+            return;
+        }
+
+        int playlistNumber = Integer.parseInt(message[1]);
+        playlistList.setItems(FXCollections.observableList(new ArrayList<>(Arrays.asList(message).subList(2, 2 + playlistNumber))));
+    }
+
+    public void onDeletePlaylist(ActionEvent event) throws IOException, ClassNotFoundException {
+        String playlists = client.getPlaylistNames();
+        String[] message = playlists.split("\n");
+
+        if (message[0].equals(MessageTypes.FAILURE)) {
+            AlertUtils.showAlert(playlists);
+            return;
+        }
+
+        int playlistNumber = Integer.parseInt(message[1]);
+        String playlistName = DialogUtils.deletePlaylist(new ArrayList<>(Arrays.asList(message).subList(2, 2 + playlistNumber)));
+
+        if (playlistName == null) return;
+
+        String[] playlistDetails = playlistName.split(" - ");
+        int playlistId = Integer.parseInt(playlistDetails[0]);
+
+        try {
+            client.deletePlaylist(playlistId);
+        } catch (SocketException e) {
+            try {
+                client.reconnect();
+
+                client.deletePlaylist(playlistId);
+            } catch (IOException | ClassNotFoundException ex) {
+                AlertUtils.showException(ex);
+            }
+        }
+
+        AlertUtils.showAlert(client.receiveMessage());
+
+        updatePlaylists();
     }
 
     public void onPlay(ActionEvent event) {
@@ -244,5 +281,4 @@ public class Controller {
     public void shutdown() throws IOException {
         if (client != null) client.shutdown();
     }
-
 }

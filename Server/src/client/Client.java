@@ -64,7 +64,7 @@ public class Client implements Constants {
 
         fileOutputStream.close();
 
-        return ".\\Uploads" + File.separator + File.separator + fileName;
+        return "." + File.separator + File.separator + "Uploads" + File.separator + File.separator + fileName;
     }
 
     public int getUserID() {

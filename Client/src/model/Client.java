@@ -6,6 +6,9 @@ import model.server.Server;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Client implements MessageTypes {
     private String username;
@@ -43,6 +46,14 @@ public class Client implements MessageTypes {
         server.upload(filePath);
     }
 
+    public void createPlaylist(String playlistInfo) throws IOException {
+        server.sendMessage(playlistInfo);
+    }
+
+    public void deletePlaylist(int playlistId) throws IOException {
+        server.sendMessage(MessageTypes.PLAYLIST_DELETE + "\n" + playlistId);
+    }
+
     public void resetDetails() {
         username = password = null;
     }
@@ -67,5 +78,10 @@ public class Client implements MessageTypes {
 
         username = info[0];
         password = info[1];
+    }
+
+    public String getPlaylistNames() throws IOException, ClassNotFoundException {
+        server.getPlaylists();
+        return receiveMessage();
     }
 }

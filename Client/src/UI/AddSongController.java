@@ -22,6 +22,7 @@ public class AddSongController {
     private String songDetails;
 
     public void initialize() {
+        songDuration = 0;
         songDetails = null;
     }
 
@@ -35,20 +36,6 @@ public class AddSongController {
         close(actionEvent);
     }
 
-    public void updateChanges(KeyEvent keyEvent) {
-        if (!songNameTextField.getText().isEmpty() && !artistTextField.getText().isEmpty() && !albumTextField.getText().isEmpty() && !yearTextField.getText().isEmpty() && !genreTextField.getText().isEmpty()) {
-            if (!checkYear(yearTextField.getText())) {
-                uploadButton.setDisable(true);
-                return;
-            };
-
-            uploadButton.setDisable(false);
-            return;
-        }
-
-        uploadButton.setDisable(true);
-    }
-
     private static boolean checkYear(String string) {
         try {
             Integer.parseInt(string);
@@ -59,19 +46,23 @@ public class AddSongController {
         return true;
     }
 
-    public String getSongDetails() {
-        return songDetails;
+    public void updateChanges(KeyEvent keyEvent) {
+        if (!songNameTextField.getText().isEmpty() && !artistTextField.getText().isEmpty() && !albumTextField.getText().isEmpty() && !yearTextField.getText().isEmpty() && !genreTextField.getText().isEmpty()) {
+            uploadButton.setDisable(!checkYear(yearTextField.getText()));
+            return;
+        }
+
+        uploadButton.setDisable(true);
     }
 
-    public void setSongDuration(int songDuration) {
-        this.songDuration = songDuration;
-    }
-
-    @FXML
     private void close(ActionEvent actionEvent) {
         Node node = (Node) actionEvent.getSource();
         Stage stage = (Stage) node.getScene().getWindow();
 
         stage.close();
+    }
+
+    public String getSongDetails() {
+        return songDetails;
     }
 }

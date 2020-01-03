@@ -24,8 +24,7 @@ public class ClientApplication extends Application {
         primaryStage.setOnHidden(event -> {
             try {
                 controller.shutdown();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignored) {
             }
             Platform.exit();
         });

@@ -22,7 +22,7 @@ public interface Queries {
             "  `year` INT NOT NULL,\n" +
             "  `genre` VARCHAR(45) NOT NULL,\n" +
             "  `length` INT NOT NULL,\n" +
-            "  `filelocation` VARCHAR(45) NOT NULL,\n" +
+            "  `filelocation` VARCHAR(100) NOT NULL,\n" +
             "  `User_id` INT NOT NULL,\n" +
             "  PRIMARY KEY (`id`),\n" +
             "  UNIQUE INDEX `id_UNIQUE` (`id` ASC),\n" +
