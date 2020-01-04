@@ -1,14 +1,15 @@
 package model;
 
+import model.constants.Constants;
 import model.constants.MessageTypes;
 import model.server.Proxy;
 import model.server.Server;
+import model.utils.FileUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Client implements MessageTypes {
     private String username;
@@ -37,16 +38,16 @@ public class Client implements MessageTypes {
         server.logout();
     }
 
-    public String receiveMessage() throws IOException, ClassNotFoundException {
-        return server.receiveMessage();
-    }
-
     public void upload(String songInfo, String filePath) throws IOException {
         server.sendMessage(songInfo);
         server.upload(filePath);
     }
 
-    public void createPlaylist(String playlistInfo) throws IOException {
+    public String getSongs() throws IOException, ClassNotFoundException {
+        return server.getSongs();
+    }
+
+    public void createOrEditPlaylist(String playlistInfo) throws IOException {
         server.sendMessage(playlistInfo);
     }
 
@@ -54,8 +55,12 @@ public class Client implements MessageTypes {
         server.sendMessage(MessageTypes.PLAYLIST_DELETE + "\n" + playlistId);
     }
 
-    public void resetDetails() {
-        username = password = null;
+    public String receiveMessage() throws IOException, ClassNotFoundException {
+        return server.receiveMessage();
+    }
+
+    public String getPlaylistNames() throws IOException, ClassNotFoundException {
+        return server.getPlaylists();
     }
 
     public void reconnect() throws IOException, ClassNotFoundException {
@@ -69,8 +74,11 @@ public class Client implements MessageTypes {
 
     public void shutdown() throws IOException {
         proxy.close();
-
         server.close();
+    }
+
+    public void resetDetails() {
+        username = password = null;
     }
 
     public void setDetails(String loginDetails) {
@@ -80,8 +88,11 @@ public class Client implements MessageTypes {
         password = info[1];
     }
 
-    public String getPlaylistNames() throws IOException, ClassNotFoundException {
-        server.getPlaylists();
-        return receiveMessage();
+    public String getSongInfo(int songId) throws IOException, ClassNotFoundException {
+        return server.getSongInfo(songId);
+    }
+
+    public File receiveSong(String filePath) throws IOException {
+        return server.receiveFile(FileUtils.getFileFromPath(filePath));
     }
 }

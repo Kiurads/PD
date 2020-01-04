@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.input.*?>
 <?import javafx.scene.layout.*?>
 
@@ -19,13 +20,15 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem fx:id="uploadItem" mnemonicParsing="false" onAction="#onUpload" text="Upload song">
+                        <MenuItem fx:id="uploadItem" disable="true" mnemonicParsing="false" onAction="#onUpload" text="Upload song">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="U" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                             </accelerator>
                         </MenuItem>
+                  <MenuItem fx:id="playItem" disable="true" mnemonicParsing="false" onAction="#onPlaySong" text="Play song" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="createPlaylistItem" disable="true" mnemonicParsing="false" onAction="#onCreatePlaylist" text="Create playlist" />
+                  <MenuItem mnemonicParsing="false" onAction="#onEditPlaylist" text="Edit playlist" />
                   <MenuItem fx:id="deletePlaylistItem" disable="true" mnemonicParsing="false" onAction="#onDeletePlaylist" text="Delete playlist" />
                     </items>
                 </Menu>
@@ -90,5 +93,24 @@
                 <ListView fx:id="songList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
             </center>
         </BorderPane>
+      <HBox alignment="CENTER" prefHeight="19.0" prefWidth="640.0" VBox.vgrow="NEVER">
+         <children>
+            <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true" style="-fx-image: url('UI/images/volumedown.png');">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" />
+               </HBox.margin>
+            </ImageView>
+            <Slider fx:id="volumeSlider" onDragDone="#onVolumeChange" prefHeight="0.0" prefWidth="140.0">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" />
+               </HBox.margin>
+            </Slider>
+            <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true" style="-fx-image: url('UI/images/volumeup.png');">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" />
+               </HBox.margin>
+            </ImageView>
+         </children>
+      </HBox>
     </children>
 </VBox>

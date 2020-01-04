@@ -39,6 +39,22 @@ public class Client implements Constants {
         out.writeObject(object);
     }
 
+    public void sendFile(String filePath) throws IOException {
+        FileInputStream fileInputStream;
+        OutputStream outputStream;
+        byte[] fileChunk = new byte[MAX_SIZE];
+        int nbytes;
+
+        fileInputStream = new FileInputStream(filePath);
+        outputStream = socket.getOutputStream();
+
+        while ((nbytes = fileInputStream.read(fileChunk)) > 0) {
+            outputStream.write(fileChunk, 0, nbytes);
+        }
+        outputStream.flush();
+        fileInputStream.close();
+    }
+
     public String getFile(String fileName) throws IOException {
         if (userID == -1) return null;
 

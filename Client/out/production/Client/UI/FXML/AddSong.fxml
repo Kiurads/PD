@@ -70,7 +70,7 @@
         </TextField>
     </HBox>
     <HBox alignment="CENTER" prefHeight="60.0" prefWidth="400.0">
-        <Button alignment="CENTER" cancelButton="true" mnemonicParsing="false" onAction="#close" prefHeight="25.0"
+        <Button alignment="CENTER" cancelButton="true" mnemonicParsing="false" prefHeight="25.0"
                 prefWidth="140.0" style="-fx-background-color: f08078;" text="Cancel">
             <HBox.margin>
                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>

@@ -51,6 +51,8 @@ public class Diretorio implements Constants {
         String message;
 
         while (true) {
+            pingServers();
+
             try {
                 message = waitDatagram();
             } catch (SocketTimeoutException e) {
@@ -107,13 +109,17 @@ public class Diretorio implements Constants {
                         if (servers.get(i).getAddress().equals(packetAddress)) {
                             System.out.println("[Proxy] Removing server at " + packetAddress.getHostAddress());
                             if (currentServer == servers.size() - 1) currentServer = 0;
+                            out.writeObject(MessageTypes.REMOVE_SERVER);
+                            out.flush();
+
+                            packet = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), packetAddress, packetPort);
+                            socket.send(packet);
+
                             servers.remove(i);
                             break;
                         }
                     }
             }
-
-            pingServers();
         }
 
     }

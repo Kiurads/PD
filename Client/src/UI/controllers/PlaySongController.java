@@ -1,5 +1,6 @@
 package UI.controllers;
 
+import UI.utils.AlertUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,39 +11,37 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
-public class DeletePlaylistController {
-    public ListView<String> playlistListView;
-    public Button deleteButton;
+public class PlaySongController {
+    public ListView<String> songListView;
+    public Button playButton;
 
-    private int playlistId;
+    private int songId;
 
     public void initialize() {
-        playlistId = -1;
+        songId = -1;
 
-        playlistListView.getSelectionModel().selectedItemProperty()
+        songListView.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> updateChanges());
     }
 
-    public void onDelete(ActionEvent event) {
-        String[] details = playlistListView.getSelectionModel().getSelectedItem().split(" - ");
+    public void onPlay(ActionEvent event) {
+        String[] details = songListView.getSelectionModel().getSelectedItem().split(" - ");
 
-        playlistId = Integer.parseInt(details[0]);
+        songId = Integer.parseInt(details[0]);
 
         close(event);
     }
 
-    public void setPlaylistListView(List<String> playlistList) {
+    public void setSongListView(List<String> playlistList) {
         ObservableList<String> list = FXCollections.observableList(playlistList);
-        playlistListView.setItems(list);
+        songListView.setItems(list);
     }
 
-
-
     public void updateChanges() {
-        if (playlistListView.getSelectionModel().getSelectedItem() != null)
-            deleteButton.setDisable(false);
+        if (songListView.getSelectionModel().getSelectedItem() != null)
+            playButton.setDisable(false);
         else
-            deleteButton.setDisable(true);
+            playButton.setDisable(true);
     }
 
     public void close(ActionEvent event) {
@@ -52,7 +51,7 @@ public class DeletePlaylistController {
         stage.close();
     }
 
-    public int getPlaylistId() {
-        return playlistId;
+    public int getSongId() {
+        return songId;
     }
 }

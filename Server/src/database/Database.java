@@ -19,13 +19,13 @@ public class Database {
                 "values ('" + name + "','" + username + "','" + password + "')";
 
         statement = db.getConnection().createStatement();
-
         statement.executeUpdate(query);
         statement.close();
     }
 
     public int findUser(String username, String password) throws SQLException {
-        query = "select id, username, password from user";
+        query = "select id, username, password \n" +
+                "from User";
 
         statement = db.getConnection().createStatement();
 
@@ -48,11 +48,36 @@ public class Database {
         return -1;
     }
 
-    public String getSongs(int user_id) throws SQLException {
-        StringBuilder songList;
+    public String getSong(int songId) throws SQLException {
+        StringBuilder songInfo = new StringBuilder();
 
-        query = "select name, artist, album, year, length, genre, filelocation " +
-                "from Song ";
+        query = "select name, artist, album, year, genre, filelocation " +
+                "from Song " +
+                "where id = " + songId;
+
+        statement = db.getConnection().createStatement();
+
+        result = statement.executeQuery(query);
+
+        result.next();
+
+        songInfo.append(result.getString("name")).append("\n")
+                .append(result.getString("artist")).append("\n")
+                .append(result.getString("album")).append("\n")
+                .append(result.getString("year")).append("\n")
+                .append(result.getString("genre")).append("\n")
+                .append(result.getString("filelocation"));
+
+        statement.close();
+        return songInfo.toString();
+    }
+
+    public String getSongs(int user_id) throws SQLException {
+        StringBuilder songList = new StringBuilder();
+        int count = 0;
+
+        query = "select id, name " +
+                "from song";
 
         if (user_id > 0)
             query += "where user_id= " + user_id;
@@ -61,17 +86,12 @@ public class Database {
 
         result = statement.executeQuery(query);
 
-        songList = new StringBuilder(result.getFetchSize() + "\n");
-
         while (result.next()) {
-            songList.append(result.getString("name")).append("\n")
-                    .append(result.getString("artist")).append("\n")
-                    .append(result.getString("album")).append("\n")
-                    .append(result.getString("year")).append("\n")
-                    .append(result.getString("length")).append("\n")
-                    .append(result.getString("genre")).append("\n")
-                    .append(result.getString("filelocation")).append("\n");
+            count++;
+            songList.append(result.getInt("id")).append(" - ").append(result.getString("name")).append("\n");
         }
+
+        songList.insert(0, count + "\n");
 
         statement.close();
         return songList.toString();
@@ -93,25 +113,21 @@ public class Database {
 
         while (result.next()) {
             count++;
-            playlists.append(result.getInt("id")).append(" - ").append(result.getString("name")).append("\n");
+            playlists.append(result.getInt("id")).append(" - ").append(result.getString("name"));
         }
-
         playlists.insert(0, count + "\n");
 
         statement.close();
         return playlists.toString();
     }
 
-    public boolean addPlaylist(String name, int userId) throws SQLException {
+    public void addPlaylist(String name, int userId) throws SQLException {
         query = "insert into playlist (name, user_id)" +
                 " values ('" + name + "'," + userId + ")";
 
         statement = db.getConnection().createStatement();
-
-        int result = statement.executeUpdate(query);
-
+        statement.executeUpdate(query);
         statement.close();
-        return result > 0;
     }
 
     public void removePlaylist(int id) throws SQLException {
@@ -195,5 +211,15 @@ public class Database {
 
     public void close() throws SQLException {
         db.close();
+    }
+
+    public void updatePlaylist(int playlistId, String playlistName) throws SQLException {
+        query = "update playlist " +
+                "set name ='" + playlistName +
+                "' where id = " + playlistId;
+
+        statement = db.getConnection().createStatement();
+        statement.executeUpdate(query);
+        statement.close();
     }
 }

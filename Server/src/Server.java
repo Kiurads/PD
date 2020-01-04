@@ -24,7 +24,7 @@ public class Server implements Constants {
         proxyThread.start();
     }
 
-    public void start() throws InterruptedException, SQLException {
+    public void start() throws SQLException, InterruptedException {
         Scanner scanner = new Scanner(System.in);
         String input = "";
 
@@ -33,7 +33,11 @@ public class Server implements Constants {
         }
 
         database.close();
-        proxyThread.terminate();
+        try {
+            proxyThread.terminate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         for (ClientThread thread : clientThreads) {
             thread.terminate();

@@ -66,6 +66,32 @@ public class Server implements Constants {
         fileInputStream.close();
     }
 
+    public File receiveFile(String fileName) throws IOException {
+        String filePath;
+        File localPath;
+        InputStream inputStream;
+        FileOutputStream fileOutputStream;
+        byte[] fileChunk = new byte[MAX_SIZE];
+        int nbytes;
+
+        localPath = new File("./Downloads");
+        localPath.mkdir();
+
+        filePath = localPath.getCanonicalPath() + File.separator + fileName;
+
+        inputStream = socket.getInputStream();
+        fileOutputStream = new FileOutputStream(filePath);
+
+        do {
+            if (((nbytes = inputStream.read(fileChunk)) > 0))
+                fileOutputStream.write(fileChunk, 0, nbytes);
+        } while (nbytes == MAX_SIZE);
+
+        fileOutputStream.close();
+
+        return new File("." + File.separator +  "Downloads" + File.separator + fileName);
+    }
+
     public void registerUser(String registerInfo) throws IOException {
         sendMessage(registerInfo);
     }
@@ -91,7 +117,20 @@ public class Server implements Constants {
         socket.close();
     }
 
-    public void getPlaylists() throws IOException {
+    public String getPlaylists() throws IOException, ClassNotFoundException {
         sendMessage(MessageTypes.PLAYLISTS);
+        return receiveMessage();
     }
+
+    public String getSongs() throws IOException, ClassNotFoundException {
+        sendMessage(MessageTypes.SONGS);
+        return receiveMessage();
+    }
+
+    public String getSongInfo(int songId) throws IOException, ClassNotFoundException {
+        sendMessage(MessageTypes.PLAY_SONG + "\n" + songId);
+        return receiveMessage();
+    }
+
+
 }

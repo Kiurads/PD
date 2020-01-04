@@ -1,10 +1,7 @@
 package UI.utils;
 
 import UI.AddSongController;
-import UI.controllers.CreatePlaylistController;
-import UI.controllers.DeletePlaylistController;
-import UI.controllers.LoginController;
-import UI.controllers.RegisterController;
+import UI.controllers.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,6 +9,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DialogUtils {
@@ -79,7 +77,7 @@ public class DialogUtils {
         return dialogController.getPlaylistName();
     }
 
-    public static String deletePlaylist(List<String> playlistNames) throws IOException {
+    public static int deletePlaylist(List<String> playlistNames) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(DialogUtils.class.getResource("/UI/FXML/DeletePlaylist.fxml"));
         Parent parent = fxmlLoader.load();
         DeletePlaylistController dialogController = fxmlLoader.getController();
@@ -93,6 +91,44 @@ public class DialogUtils {
         stage.setScene(scene);
         stage.showAndWait();
 
-        return dialogController.getPlaylistName();
+        return dialogController.getPlaylistId();
+    }
+
+    public static String editPlaylist(List<String> playlistNames) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(DialogUtils.class.getResource("/UI/FXML/EditPlaylist.fxml"));
+        Parent parent = fxmlLoader.load();
+        EditPlaylistController dialogController = fxmlLoader.getController();
+        dialogController.setPlaylistListView(playlistNames);
+
+        Scene scene = new Scene(parent, 400, 200);
+        Stage stage = new Stage();
+        stage.setResizable(false);
+        stage.setTitle("Edit playlist");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.showAndWait();
+
+        if (dialogController.getPlaylistId() != -1)
+            return dialogController.getPlaylistId() + "\n" + dialogController.getPlaylistName();
+        return null;
+    }
+
+    public static int playSong(ArrayList<String> songNames) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(DialogUtils.class.getResource("/UI/FXML/PlaySong.fxml"));
+        Parent parent = fxmlLoader.load();
+        PlaySongController dialogController = fxmlLoader.getController();
+        dialogController.setSongListView(songNames);
+
+        Scene scene = new Scene(parent, 400, 200);
+        Stage stage = new Stage();
+        stage.setResizable(false);
+        stage.setTitle("Edit playlist");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.showAndWait();
+
+        if (dialogController.getSongId() != -1)
+            return dialogController.getSongId();
+        return -1;
     }
 }

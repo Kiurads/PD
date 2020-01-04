@@ -10,10 +10,10 @@ import java.net.InetAddress;
 import java.util.List;
 
 public class ProxyThread extends Thread implements Constants {
-    List<ClientThread> clientThreads;
-    Database database;
-    Proxy proxy;
-    boolean running;
+    private List<ClientThread> clientThreads;
+    private Database database;
+    private Proxy proxy;
+    private boolean running;
 
     public ProxyThread(InetAddress proxyAddress, List<ClientThread> clientThreads, Database database) throws IOException {
         proxy = new Proxy(proxyAddress);
@@ -23,7 +23,8 @@ public class ProxyThread extends Thread implements Constants {
         running = true;
     }
 
-    public void terminate() {
+    public void terminate() throws IOException {
+        proxy.send(MessageTypes.REMOVE_SERVER);
         running = false;
     }
 
@@ -50,6 +51,11 @@ public class ProxyThread extends Thread implements Constants {
 
                         clientThreads.add(thread);
                         break;
+
+                    case MessageTypes.REMOVE_SERVER:
+                        running = false;
+                        break;
+
                     case MessageTypes.PING:
                         proxy.send(MessageTypes.PING);
                         break;
@@ -61,7 +67,6 @@ public class ProxyThread extends Thread implements Constants {
         }
 
         try {
-            System.out.println("[Proxy] Closing connection");
             proxy.remove();
         } catch (IOException ignored) {
         }

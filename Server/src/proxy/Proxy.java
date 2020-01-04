@@ -39,7 +39,6 @@ public class Proxy {
     }
 
     public void remove() throws IOException {
-        send(MessageTypes.REMOVE_SERVER);
         socket.close();
     }
 

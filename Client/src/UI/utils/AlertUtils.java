@@ -1,9 +1,6 @@
 package UI.utils;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
@@ -49,6 +46,14 @@ public class AlertUtils {
         alert.getDialogPane().setExpandableContent(expContent);
 
         alert.showAndWait();
+    }
+
+    public static String getText(String title, String content, String text) {
+        TextInputDialog alert = new TextInputDialog(text);
+        alert.setContentText(content);
+        alert.setTitle(title);
+
+        return alert.showAndWait().orElse(null);
     }
 
     public static Optional<ButtonType> getConfirmation() {

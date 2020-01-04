@@ -107,12 +107,44 @@ public class ClientThread extends Thread {
                     }
                     break;
 
+                case MessageTypes.SONGS:
+                    try {
+                        client.send(MessageTypes.SUCCESS + "\n" + database.getSongs(-1));
+                    } catch (SQLException e) {
+                        try {
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
+                        } catch (IOException ex) {
+                            terminate();
+                        }
+                    } catch (IOException e) {
+                        terminate();
+                    }
+                    break;
+
+                case MessageTypes.PLAY_SONG:
+                    try {
+                        String songInfo = database.getSong(Integer.parseInt(message[1]));
+                        client.send(MessageTypes.SUCCESS + "\n" + songInfo);
+
+                        client.sendFile(songInfo.split("\n")[5]);
+                    } catch (SQLException e) {
+                        try {
+                            e.printStackTrace();
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
+                        } catch (IOException ex) {
+                            terminate();
+                        }
+                    } catch (IOException e) {
+                        terminate();
+                    }
+                    break;
+
                 case MessageTypes.PLAYLISTS:
                     try {
                         client.send(MessageTypes.SUCCESS + "\n" + database.getPlaylists(client.getUserID()));
                     } catch (SQLException e) {
                         try {
-                            client.send(MessageTypes.FAILURE + e.getMessage());
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
                         } catch (IOException ex) {
                             terminate();
                         }
@@ -126,6 +158,24 @@ public class ClientThread extends Thread {
                         database.addPlaylist(message[1], client.getUserID());
 
                         System.out.println("[Client:" + client.getServerPort() + "] Created playlist");
+                        client.send(MessageTypes.SUCCESS);
+                        break;
+                    } catch (SQLException e) {
+                        try {
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
+                        } catch (IOException ex) {
+                            terminate();
+                        }
+                    } catch (IOException e) {
+                        terminate();
+                    }
+                    break;
+
+                case MessageTypes.PLAYLIST_EDIT:
+                    try {
+                        database.updatePlaylist(Integer.parseInt(message[1]), message[2]);
+
+                        System.out.println("[Client:" + client.getServerPort() + "] Edited playlist");
                         client.send(MessageTypes.SUCCESS);
                         break;
                     } catch (SQLException e) {

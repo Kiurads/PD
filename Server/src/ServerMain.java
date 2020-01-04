@@ -16,9 +16,7 @@ public class ServerMain {
             server.start();
         } catch (IOException | InterruptedException e) {
             System.out.println("No proxy available");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
