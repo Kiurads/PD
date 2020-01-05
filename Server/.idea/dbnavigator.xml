@@ -23,15 +23,11 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
-    <loaded-nodes>
-      <connection connection-id="e62a41bc-5617-4b64-878f-23b0455b4676">
-        <schema name="pd_streamer" object-types="index, column, procedure, table, view, function, constraint, dataset trigger" />
-      </connection>
-    </loaded-nodes>
+    <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="e62a41bc-5617-4b64-878f-23b0455b4676">
-      <console name="Connection" type="STANDARD" schema="pd_streamer" session="Main">select * from song</console>
+      <console name="Connection" type="STANDARD" schema="pd_streamer" session="Main"><![CDATA[select * from song]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">

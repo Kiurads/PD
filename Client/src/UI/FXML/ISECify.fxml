@@ -35,6 +35,8 @@
                         <KeyCodeCombination alt="UP" code="P" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#onEditSong" text="Edit song" />
+                  <MenuItem mnemonicParsing="false" onAction="#onDeleteSong" text="Delete song" />
                      <SeparatorMenuItem mnemonicParsing="false" />
                      <MenuItem fx:id="createPlaylistItem" disable="true" mnemonicParsing="false" onAction="#onCreatePlaylist" text="Create playlist" />
                      <MenuItem fx:id="editPlaylistItem" disable="true" mnemonicParsing="false" onAction="#onEditPlaylist" text="Edit playlist" />
@@ -64,7 +66,7 @@
                              </Slider>
                              <HBox alignment="CENTER" prefHeight="45.0" prefWidth="568.0" VBox.vgrow="NEVER">
                                 <children>
-                                    <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="30.0" style="-fx-background-image: url('UI/images/previous.png'); -fx-background-size: 25px; -fx-background-repeat: no-repeat; -fx-background-position: 90%;">
+                                    <Button mnemonicParsing="false" onAction="#onPrevious" prefHeight="25.0" prefWidth="30.0" style="-fx-background-image: url('UI/images/previous.png'); -fx-background-size: 25px; -fx-background-repeat: no-repeat; -fx-background-position: 90%;">
                                         <HBox.margin>
                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                         </HBox.margin>
@@ -84,7 +86,7 @@
                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                         </HBox.margin>
                                     </Button>
-                                    <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="30.0" style="-fx-background-image: url('UI/images/next.png'); -fx-background-size: 25px; -fx-background-repeat: no-repeat; -fx-background-position: 90%;">
+                                    <Button mnemonicParsing="false" onAction="#onNext" prefHeight="25.0" prefWidth="30.0" style="-fx-background-image: url('UI/images/next.png'); -fx-background-size: 25px; -fx-background-repeat: no-repeat; -fx-background-position: 90%;">
                                         <HBox.margin>
                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                         </HBox.margin>
@@ -131,7 +133,7 @@
                      <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                            <children>
-                              <Button mnemonicParsing="false" onAction="#removeFromPlaylist" prefHeight="25.0" prefWidth="30.0" style="-fx-background-size: 30px; -fx-background-repeat: no-repeat; -fx-background-position: 90%; -fx-background-image: url('UI/images/minus.png');">
+                              <Button fx:id="removeButton" mnemonicParsing="false" onAction="#removeFromPlaylist" prefHeight="25.0" prefWidth="30.0" style="-fx-background-size: 30px; -fx-background-repeat: no-repeat; -fx-background-position: 90%; -fx-background-image: url('UI/images/minus.png');">
                                  <HBox.margin>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </HBox.margin>

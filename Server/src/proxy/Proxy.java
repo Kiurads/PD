@@ -38,7 +38,7 @@ public class Proxy {
         if (reply.contains(MessageTypes.REGISTER_SERVER_SUCCESS)) System.out.println("[Proxy] Server registered");
     }
 
-    public void remove() throws IOException {
+    public void remove() {
         socket.close();
     }
 

@@ -4,8 +4,9 @@ import UI.utils.AlertUtils;
 import UI.utils.DialogUtils;
 import UI.utils.SongOperations;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.media.Media;
@@ -18,10 +19,7 @@ import model.data.Song;
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 
 public class Controller {
     public MenuItem loginItem;
@@ -36,8 +34,9 @@ public class Controller {
 
     public ListView<String> playlistList;
 
-    public ListView songList;
+    public ListView<String> songList;
     public HBox playlistControls;
+    public Button removeButton;
 
     public Label songDetails;
     private MediaPlayer currentMediaPlayer;
@@ -47,7 +46,15 @@ public class Controller {
     private Client client;
     private Song currentSong;
 
+    private boolean playlist;
+    private List<Song> currentPlaylist;
+    private int currentPlaylistSong;
+
     public void initialize() {
+        playlist = false;
+        currentPlaylist = new ArrayList<>();
+        currentPlaylistSong = 0;
+
         try {
             String proxyAddress = AlertUtils.getText("Proxy Address", "Insert proxy address", "localhost");
             if (proxyAddress != null)
@@ -73,6 +80,13 @@ public class Controller {
                 playlistSelect();
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
+            }
+        });
+
+        songList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                songSelect();
             }
         });
 
@@ -180,7 +194,7 @@ public class Controller {
 
         if (songDetails == null) return;
 
-        songDetails = MessageTypes.UPLOAD + "\n" + songDetails + "\n" + file.getName();
+        songDetails = MessageTypes.SONG_UPLOAD + "\n" + songDetails + "\n" + file.getName();
 
         try {
             client.upload(songDetails, file.getCanonicalPath());
@@ -212,40 +226,78 @@ public class Controller {
         if (songId == -1) return;
 
         try {
-            message = client.getSongInfo(songId);
+            message = client.getSongFile(songId);
             String[] songInfo = message.split("\n");
 
             if (songInfo[0].equals(MessageTypes.FAILURE)) {
                 AlertUtils.showAlert(message);
                 return;
             }
-
             currentSong = new Song(songInfo);
-
             currentSong.setFile(client.receiveSong(songInfo[6]));
 
+            playlist = false;
             playCurrentSong();
         } catch (SocketException e) {
             try {
                 client.reconnect();
 
-                message = client.getSongInfo(songId);
+                message = client.getSongFile(songId);
                 String[] songInfo = message.split("\n");
 
                 if (songInfo[0].equals(MessageTypes.FAILURE)) {
                     AlertUtils.showAlert(message);
                     return;
                 }
-
                 currentSong = new Song(songInfo);
-
                 currentSong.setFile(client.receiveSong(songInfo[6]));
 
+                playlist = false;
                 playCurrentSong();
             } catch (IOException | ClassNotFoundException ex) {
                 AlertUtils.showException(ex);
             }
         }
+    }
+
+    public void onEditSong() throws IOException, ClassNotFoundException {
+        String message = client.getUserSongs();
+        String[] songs = message.split("\n");
+
+        if (songs[0].equals(MessageTypes.FAILURE)) {
+            AlertUtils.showAlert(message);
+            return;
+        }
+
+        int size = Integer.parseInt(songs[1]);
+        int songId = DialogUtils.chooseSong(new ArrayList<>(Arrays.asList(songs).subList(2, 2 + size)), SongOperations.EDIT);
+
+        if (songId == -1) return;
+
+        message = client.getSongInfo(songId);
+        String[] songDetails = message.split("\n");
+
+        if (songDetails[0].equals(MessageTypes.FAILURE)) {
+            AlertUtils.showAlert(message);
+            return;
+        }
+
+        try {
+            client.editSong(songId, DialogUtils.getSongDetails(songDetails));
+        } catch (SocketException e) {
+            try {
+                client.reconnect();
+
+                client.editSong(songId, DialogUtils.getSongDetails(songDetails));
+            } catch (IOException | ClassNotFoundException ex) {
+                AlertUtils.showException(ex);
+            }
+        }
+
+        AlertUtils.showAlert(client.receiveMessage());
+    }
+
+    public void onDeleteSong() {
     }
 
     public void onCreatePlaylist() throws IOException, ClassNotFoundException {
@@ -345,7 +397,7 @@ public class Controller {
         updatePlaylists();
     }
 
-    public void addToPlaylist(ActionEvent event) throws IOException, ClassNotFoundException {
+    public void addToPlaylist() throws IOException, ClassNotFoundException {
         String message = client.getSongs();
         String[] songs = message.split("\n");
         int playlistId = Integer.parseInt(playlistList.getSelectionModel().getSelectedItem().split(" - ")[0]);
@@ -376,17 +428,67 @@ public class Controller {
         updateSongList();
     }
 
-    public void removeFromPlaylist(ActionEvent event) {
+    public void removeFromPlaylist() throws IOException, ClassNotFoundException {
+        int playlistId = Integer.parseInt(playlistList.getSelectionModel().getSelectedItem().split(" - ")[0]);
+        int songId = Integer.parseInt(songList.getSelectionModel().getSelectedItem().split(" - ")[0]);
+
+        if (AlertUtils.getConfirmation().get() != ButtonType.OK) return;
+
+        try {
+            client.removeFromPlaylist(playlistId, songId);
+        } catch (SocketException e) {
+            try {
+                client.reconnect();
+
+                client.removeFromPlaylist(playlistId, songId);
+            } catch (IOException | ClassNotFoundException ex) {
+                AlertUtils.showException(ex);
+            }
+        }
+
+        AlertUtils.showAlert(client.receiveMessage());
+        updateSongList();
     }
 
-    public void loadPlaylist(ActionEvent event) {
+    public void loadPlaylist() throws IOException, ClassNotFoundException {
+        int playlistId = Integer.parseInt(playlistList.getSelectionModel().getSelectedItem().split(" - ")[0]);
+        String message = client.requestPlaylist(playlistId);
+        String[] content = message.split("\n");
+
+        if (content[0].equals(MessageTypes.FAILURE)) {
+            AlertUtils.showAlert(message);
+            return;
+        }
+
+        try {
+            currentPlaylist = client.loadPlaylist(Integer.parseInt(content[1]));
+
+            playlist = true;
+            currentPlaylistSong = 0;
+            playCurrentSong();
+        } catch (SocketException e) {
+            try {
+                client.reconnect();
+
+                currentPlaylist = client.loadPlaylist(Integer.parseInt(content[1]));
+
+                playlist = true;
+                currentPlaylistSong = 0;
+                playCurrentSong();
+            } catch (IOException | ClassNotFoundException ex) {
+                AlertUtils.showException(ex);
+            }
+        }
     }
 
     private void playCurrentSong() {
-        Media media = new Media(currentSong.getFile().toURI().toString());
+        Media media;
+        if (!playlist) media = new Media(currentSong.getFile().toURI().toString());
+        else media = new Media(currentPlaylist.get(currentPlaylistSong).getFile().toURI().toString());
         if (currentMediaPlayer != null) currentMediaPlayer.stop();
         currentMediaPlayer = new MediaPlayer(media);
-        songDetails.setText(currentSong.toString());
+        if (!playlist) songDetails.setText(currentSong.toString());
+        else songDetails.setText(currentPlaylist.get(currentPlaylistSong).toString());
         onVolumeChange();
 
         onPlay();
@@ -412,24 +514,44 @@ public class Controller {
         currentMediaPlayer.stop();
     }
 
+    public void onNext() {
+        if (!playlist) return;
+
+        currentPlaylistSong++;
+        if (currentPlaylistSong == currentPlaylist.size()) currentPlaylistSong = 0;
+
+        playCurrentSong();
+    }
+
+    public void onPrevious() {
+        if (!playlist) return;
+
+        currentPlaylistSong--;
+        if (currentPlaylistSong == -1) currentPlaylistSong += currentPlaylist.size();
+
+        playCurrentSong();
+    }
+
     private void playlistSelect() throws IOException, ClassNotFoundException {
         if (playlistList.getSelectionModel().getSelectedItem() != null) {
-            System.out.println(playlistList.getSelectionModel().getSelectedItem());
             playlistControls.setDisable(false);
+            removeButton.setDisable(true);
+            songList.getSelectionModel().clearSelection();
             updateSongList();
-        }
-        else {
+        } else {
             playlistControls.setDisable(true);
             songList.setItems(null);
         }
+    }
+
+    private void songSelect() {
+        removeButton.setDisable(songList.getSelectionModel().getSelectedItem() == null);
     }
 
     private void updateSongList() throws IOException, ClassNotFoundException {
         int playlistId = Integer.parseInt(playlistList.getSelectionModel().getSelectedItem().split(" - ")[0]);
         String message = client.getSongsInPlaylist(playlistId);
         String[] songs = message.split("\n");
-
-        System.out.println(message);
 
         if (songs[0].equals(MessageTypes.FAILURE)) return;
 

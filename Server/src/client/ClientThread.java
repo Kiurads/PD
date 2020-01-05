@@ -5,6 +5,7 @@ import database.Database;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 public class ClientThread extends Thread {
     private Client client;
@@ -77,7 +78,7 @@ public class ClientThread extends Thread {
                     }
                     break;
 
-                case MessageTypes.UPLOAD:
+                case MessageTypes.SONG_UPLOAD:
                     try {
                         String filePath;
                         if ((filePath = client.getFile(message[7])) != null) {
@@ -121,12 +122,60 @@ public class ClientThread extends Thread {
                     }
                     break;
 
-                case MessageTypes.PLAY_SONG:
+                case MessageTypes.SONG_USER:
+                    try {
+                        client.send(MessageTypes.SUCCESS + "\n" + database.getSongs(client.getUserID()));
+                    } catch (SQLException e) {
+                        try {
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
+                        } catch (IOException ex) {
+                            terminate();
+                        }
+                    } catch (IOException e) {
+                        terminate();
+                    }
+                    break;
+
+                case MessageTypes.SONG_DETAILS:
+                    try {
+                        String songInfo = database.getSong(Integer.parseInt(message[1]));
+                        client.send(MessageTypes.SUCCESS + "\n" + songInfo);
+                    } catch (SQLException e) {
+                        try {
+                            e.printStackTrace();
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
+                        } catch (IOException ex) {
+                            terminate();
+                        }
+                    } catch (IOException e) {
+                        terminate();
+                    }
+                    break;
+
+                case MessageTypes.SONG_PLAY:
                     try {
                         String songInfo = database.getSong(Integer.parseInt(message[1]));
                         client.send(MessageTypes.SUCCESS + "\n" + songInfo);
 
                         client.sendFile(songInfo.split("\n")[5]);
+                    } catch (SQLException e) {
+                        try {
+                            e.printStackTrace();
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
+                        } catch (IOException ex) {
+                            terminate();
+                        }
+                    } catch (IOException e) {
+                        terminate();
+                    }
+                    break;
+
+                case MessageTypes.SONG_EDIT:
+                    try {
+                        database.updateSong(Integer.parseInt(message[1]), message[2], message[3], message[4],
+                                Integer.parseInt(message[5]), message[6], Integer.parseInt(message[7]));
+
+                        client.send(MessageTypes.SUCCESS);
                     } catch (SQLException e) {
                         try {
                             e.printStackTrace();
@@ -225,9 +274,48 @@ public class ClientThread extends Thread {
                     }
                     break;
 
+                case MessageTypes.PLAYLIST_REMOVE:
+                    try {
+                        database.removeSongFromPlaylist(Integer.parseInt(message[1]), Integer.parseInt(message[2]));
+
+                        System.out.println("[Client:" + client.getServerPort() + "] Removed song from playlist");
+                        client.send(MessageTypes.SUCCESS);
+                        break;
+                    } catch (SQLException e) {
+                        try {
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
+                        } catch (IOException ex) {
+                            terminate();
+                        }
+                    } catch (IOException e) {
+                        terminate();
+                    }
+                    break;
+
                 case MessageTypes.PLAYLIST_SONGS:
                     try {
                         client.send(MessageTypes.SUCCESS + "\n" + database.getSongsFromPlaylist(Integer.parseInt(message[1])));
+                    } catch (SQLException e) {
+                        try {
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
+                        } catch (IOException ex) {
+                            terminate();
+                        }
+                    } catch (IOException e) {
+                        terminate();
+                    }
+                    break;
+
+                case MessageTypes.PLAYLIST_LOAD:
+                    try {
+                        List<String> songsList = database.getSongsFromPlaylistDetails(Integer.parseInt(message[1]));
+                        client.send(MessageTypes.SUCCESS + "\n" + songsList.size());
+
+                        for (String song : songsList) {
+                            client.send(MessageTypes.SUCCESS + "\n" + song);
+
+                            client.sendFile(song.split("\n")[5]);
+                        }
                     } catch (SQLException e) {
                         try {
                             client.send(MessageTypes.FAILURE + "\n" + e.getMessage());

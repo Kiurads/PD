@@ -31,4 +31,8 @@ public class Song {
     public String toString() {
         return name + "\n" + artist + "\n" + album + " - " + year + "\n" + genre;
     }
+
+    public String getName() {
+        return name;
+    }
 }

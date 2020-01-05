@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.net.SocketException;
 
 public class DiretorioMain {
     public static void main(String[] args) {

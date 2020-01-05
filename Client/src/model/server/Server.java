@@ -127,14 +127,33 @@ public class Server implements Constants {
         return receiveMessage();
     }
 
-    public String getSongInfo(int songId) throws IOException, ClassNotFoundException {
-        sendMessage(MessageTypes.PLAY_SONG + "\n" + songId);
+    public String getSongFile(int songId) throws IOException, ClassNotFoundException {
+        sendMessage(MessageTypes.SONG_PLAY + "\n" + songId);
         return receiveMessage();
     }
 
 
     public String getSongsInPlaylist(int playlistId) throws IOException, ClassNotFoundException {
         sendMessage(MessageTypes.PLAYLIST_SONGS + "\n" + playlistId);
+        return receiveMessage();
+    }
+
+    public String requestPlaylist(int playlistId) throws IOException, ClassNotFoundException {
+        sendMessage(MessageTypes.PLAYLIST_LOAD + "\n" + playlistId);
+        return receiveMessage();
+    }
+
+    public void editSong(int songId, String songDetails) throws IOException {
+        sendMessage(MessageTypes.SONG_EDIT + "\n" + songId + "\n" + songDetails);
+    }
+
+    public String getUserSongs() throws IOException, ClassNotFoundException {
+        sendMessage(MessageTypes.SONG_USER);
+        return receiveMessage();
+    }
+
+    public String getSongInfo(int songId) throws IOException, ClassNotFoundException {
+        sendMessage(MessageTypes.SONG_DETAILS + "\n" + songId);
         return receiveMessage();
     }
 }

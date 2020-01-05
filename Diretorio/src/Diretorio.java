@@ -17,6 +17,8 @@ public class Diretorio implements Constants {
         socket = new DatagramSocket(DEFAULT_DS_PORT);
         socket.setSoTimeout(TIMEOUT * 1000);
 
+        System.out.println("Success");
+
         servers = new ArrayList<>();
     }
 

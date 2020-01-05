@@ -1,6 +1,6 @@
 package UI.utils;
 
-import UI.controllers.AddSongController;
+import UI.controllers.SongController;
 import UI.controllers.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,9 +15,9 @@ import java.util.List;
 
 public class DialogUtils {
     public static String getSongDetails() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(DialogUtils.class.getResource("/UI/FXML/AddSong.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(DialogUtils.class.getResource("/UI/FXML/Song.fxml"));
         Parent parent = fxmlLoader.load();
-        AddSongController dialogController = fxmlLoader.getController();
+        SongController dialogController = fxmlLoader.getController();
 
         Scene scene = new Scene(parent, 400, 300);
         Stage stage = new Stage();
@@ -130,7 +130,7 @@ public class DialogUtils {
         Stage stage = new Stage();
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setResizable(false);
-        stage.setTitle("Edit playlist");
+        stage.setTitle(operation);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
         stage.showAndWait();
@@ -138,5 +138,22 @@ public class DialogUtils {
         if (dialogController.getSongId() != -1)
             return dialogController.getSongId();
         return -1;
+    }
+
+    public static String getSongDetails(String[] songDetails) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(DialogUtils.class.getResource("/UI/FXML/Song.fxml"));
+        Parent parent = fxmlLoader.load();
+        SongController dialogController = fxmlLoader.getController();
+        dialogController.setDetails(songDetails);
+
+        Scene scene = new Scene(parent, 400, 300);
+        Stage stage = new Stage();
+        stage.setResizable(false);
+        stage.setTitle("Edit Song");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.showAndWait();
+
+        return dialogController.getSongDetails();
     }
 }

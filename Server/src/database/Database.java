@@ -3,6 +3,8 @@ package database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Database {
     private Statement statement;
@@ -69,11 +71,12 @@ public class Database {
         int count = 0;
 
         query = "select id, name " +
-                "from song " +
-                "order by id";
+                "from song ";
 
         if (user_id > 0)
             query += "where user_id= " + user_id;
+
+        query +=  " order by id ";
 
         statement = db.getConnection().createStatement();
 
@@ -162,18 +165,15 @@ public class Database {
         return result > 0;
     }
 
-    public boolean updateSong(int id, String name, String artist, String album, int year, int length, String genre, String filelocation) throws SQLException {
+    public void updateSong(int id, String name, String artist, String album, int year, String genre, int length) throws SQLException {
         query = "update song " +
                 "set name ='" + name + "', artist ='" + artist + "', album ='" + album + "', " +
                 "year = " + year + ", length = " + length + ", genre = '" + genre +
                 "' where id = " + id;
 
         statement = db.getConnection().createStatement();
-
-        int result = statement.executeUpdate(query);
-
+        statement.executeUpdate(query);
         statement.close();
-        return result > 0;
     }
 
     public void addSongToPlaylist(int playlistId, int songId) throws SQLException {
@@ -213,16 +213,43 @@ public class Database {
         return songList.toString();
     }
 
-    public boolean removeSongFromPlaylist(int songID, int playlistId) throws SQLException {
-        query = "delete from playlist_has_song " +
-                "where song_id=" + songID + " and playlist_id=" + playlistId;
+    public List<String> getSongsFromPlaylistDetails(int playlistId) throws SQLException {
+        List<String> songList = new ArrayList<>();
+        query = "select *\n" +
+                "from song as s \n" +
+                "inner join playlist_has_song as ph \n" +
+                "on ph.Song_id = s.id\n" +
+                "inner join playlist as p \n" +
+                "on p.id = ph.Playlist_id\n" +
+                "where p.id = " + playlistId +
+                " order by s.id";
 
         statement = db.getConnection().createStatement();
 
-        int result = statement.executeUpdate(query);
+        result = statement.executeQuery(query);
+
+        while (result.next()) {
+            songList.add(result.getString("name") + "\n" +
+                    result.getString("artist") + "\n" +
+                    result.getString("album") + "\n" +
+                    result.getString("year") + "\n" +
+                    result.getString("genre") + "\n" +
+                    result.getString("filelocation"));
+        }
 
         statement.close();
-        return result > 0;
+        return songList;
+    }
+
+    public void removeSongFromPlaylist(int playlistId, int songId) throws SQLException {
+        query = "delete " +
+                "from playlist_has_song " +
+                "where playlist_id = " + playlistId + " and song_id = " + songId;
+
+        statement = db.getConnection().createStatement();
+
+        statement.executeUpdate(query);
+        statement.close();
     }
 
     public void close() throws SQLException {

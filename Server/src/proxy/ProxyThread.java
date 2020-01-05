@@ -66,9 +66,6 @@ public class ProxyThread extends Thread implements Constants {
             }
         }
 
-        try {
-            proxy.remove();
-        } catch (IOException ignored) {
-        }
+        proxy.remove();
     }
 }
