@@ -1,6 +1,5 @@
 package model;
 
-import model.constants.Constants;
 import model.constants.MessageTypes;
 import model.server.Proxy;
 import model.server.Server;
@@ -9,7 +8,6 @@ import model.utils.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.*;
 
 public class Client implements MessageTypes {
     private String username;
@@ -55,6 +53,10 @@ public class Client implements MessageTypes {
         server.sendMessage(MessageTypes.PLAYLIST_DELETE + "\n" + playlistId);
     }
 
+    public void addToPlaylist(int playlistId, int songId) throws IOException {
+        server.sendMessage(MessageTypes.PLAYLIST_ADD + "\n" + playlistId + "\n" + songId);
+    }
+
     public String receiveMessage() throws IOException, ClassNotFoundException {
         return server.receiveMessage();
     }
@@ -94,5 +96,9 @@ public class Client implements MessageTypes {
 
     public File receiveSong(String filePath) throws IOException {
         return server.receiveFile(FileUtils.getFileFromPath(filePath));
+    }
+
+    public String getSongsInPlaylist(int playlistId) throws IOException, ClassNotFoundException {
+        return server.getSongsInPlaylist(playlistId);
     }
 }

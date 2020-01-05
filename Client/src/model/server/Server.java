@@ -133,4 +133,8 @@ public class Server implements Constants {
     }
 
 
+    public String getSongsInPlaylist(int playlistId) throws IOException, ClassNotFoundException {
+        sendMessage(MessageTypes.PLAYLIST_SONGS + "\n" + playlistId);
+        return receiveMessage();
+    }
 }

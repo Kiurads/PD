@@ -1,12 +1,13 @@
 package UI.utils;
 
-import UI.AddSongController;
+import UI.controllers.AddSongController;
 import UI.controllers.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,8 +35,9 @@ public class DialogUtils {
         Parent parent = fxmlLoader.load();
         LoginController dialogController = fxmlLoader.getController();
 
-        Scene scene = new Scene(parent, 400, 200);
+        Scene scene = new Scene(parent, 300, 150);
         Stage stage = new Stage();
+        stage.initStyle(StageStyle.UNDECORATED);
         stage.setResizable(false);
         stage.setTitle("Login");
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -52,6 +54,7 @@ public class DialogUtils {
 
         Scene scene = new Scene(parent, 400, 200);
         Stage stage = new Stage();
+        stage.initStyle(StageStyle.UNDECORATED);
         stage.setResizable(false);
         stage.setTitle("Register");
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -61,13 +64,14 @@ public class DialogUtils {
         return dialogController.getRegisterDetails();
     }
 
-    public static String getPlaylistName() throws IOException {
+    public static String createPlaylist() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(DialogUtils.class.getResource("/UI/FXML/CreatePlaylist.fxml"));
         Parent parent = fxmlLoader.load();
         CreatePlaylistController dialogController = fxmlLoader.getController();
 
-        Scene scene = new Scene(parent, 400, 200);
+        Scene scene = new Scene(parent, 300, 125);
         Stage stage = new Stage();
+        stage.initStyle(StageStyle.UNDECORATED);
         stage.setResizable(false);
         stage.setTitle("Create playlist");
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -85,6 +89,7 @@ public class DialogUtils {
 
         Scene scene = new Scene(parent, 400, 200);
         Stage stage = new Stage();
+        stage.initStyle(StageStyle.UNDECORATED);
         stage.setResizable(false);
         stage.setTitle("Delete playlist");
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -102,6 +107,7 @@ public class DialogUtils {
 
         Scene scene = new Scene(parent, 400, 200);
         Stage stage = new Stage();
+        stage.initStyle(StageStyle.UNDECORATED);
         stage.setResizable(false);
         stage.setTitle("Edit playlist");
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -113,14 +119,16 @@ public class DialogUtils {
         return null;
     }
 
-    public static int playSong(ArrayList<String> songNames) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(DialogUtils.class.getResource("/UI/FXML/PlaySong.fxml"));
+    public static int chooseSong(ArrayList<String> songNames, String operation) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(DialogUtils.class.getResource("/UI/FXML/ChooseSong.fxml"));
         Parent parent = fxmlLoader.load();
-        PlaySongController dialogController = fxmlLoader.getController();
+        ChooseSongController dialogController = fxmlLoader.getController();
         dialogController.setSongListView(songNames);
+        dialogController.setButtonText(operation);
 
         Scene scene = new Scene(parent, 400, 200);
         Stage stage = new Stage();
+        stage.initStyle(StageStyle.UNDECORATED);
         stage.setResizable(false);
         stage.setTitle("Edit playlist");
         stage.initModality(Modality.APPLICATION_MODAL);

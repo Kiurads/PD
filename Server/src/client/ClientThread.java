@@ -68,7 +68,7 @@ public class ClientThread extends Thread {
                         } else client.send(MessageTypes.FAILURE);
                     } catch (SQLException e) {
                         try {
-                            client.send(MessageTypes.FAILURE);
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
                         } catch (IOException ex) {
                             terminate();
                         }
@@ -196,6 +196,38 @@ public class ClientThread extends Thread {
                         System.out.println("[Client:" + client.getServerPort() + "] Deleted playlist");
                         client.send(MessageTypes.SUCCESS);
                         break;
+                    } catch (SQLException e) {
+                        try {
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
+                        } catch (IOException ex) {
+                            terminate();
+                        }
+                    } catch (IOException e) {
+                        terminate();
+                    }
+                    break;
+
+                case MessageTypes.PLAYLIST_ADD:
+                    try {
+                        database.addSongToPlaylist(Integer.parseInt(message[1]), Integer.parseInt(message[2]));
+
+                        System.out.println("[Client:" + client.getServerPort() + "] Added song to playlist");
+                        client.send(MessageTypes.SUCCESS);
+                        break;
+                    } catch (SQLException e) {
+                        try {
+                            client.send(MessageTypes.FAILURE + "\n" + e.getMessage());
+                        } catch (IOException ex) {
+                            terminate();
+                        }
+                    } catch (IOException e) {
+                        terminate();
+                    }
+                    break;
+
+                case MessageTypes.PLAYLIST_SONGS:
+                    try {
+                        client.send(MessageTypes.SUCCESS + "\n" + database.getSongsFromPlaylist(Integer.parseInt(message[1])));
                     } catch (SQLException e) {
                         try {
                             client.send(MessageTypes.FAILURE + "\n" + e.getMessage());

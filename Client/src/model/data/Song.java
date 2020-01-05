@@ -3,7 +3,6 @@ package model.data;
 import java.io.File;
 
 public class Song {
-    private int id;
     private String name;
     private String artist;
     private String album;
@@ -12,41 +11,12 @@ public class Song {
 
     private File file;
 
-    public Song(int id, String name, String artist, String album, String genre, int year) {
-        this.id = id;
-        this.name = name;
-        this.artist = artist;
-        this.album = album;
-        this.genre = genre;
-        this.year = year;
-    }
-
     public Song(String[] songInfo) {
-        //TODO
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public String getAlbum() {
-        return album;
-    }
-
-    public String getGenre() {
-        return genre;
-    }
-
-    public int getYear() {
-        return year;
+        name = songInfo[1];
+        artist = songInfo[2];
+        album = songInfo[3];
+        year = Integer.parseInt(songInfo[4]);
+        genre = songInfo[5];
     }
 
     public File getFile() {
@@ -55,5 +25,10 @@ public class Song {
 
     public void setFile(File file) {
         this.file = file;
+    }
+
+    @Override
+    public String toString() {
+        return name + "\n" + artist + "\n" + album + " - " + year + "\n" + genre;
     }
 }

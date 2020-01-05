@@ -24,28 +24,20 @@ public class Database {
     }
 
     public int findUser(String username, String password) throws SQLException {
-        query = "select id, username, password \n" +
-                "from User";
+        query = "select id " +
+                "from User " +
+                "where username = '" + username + "' and password = '" + password + "'";
 
         statement = db.getConnection().createStatement();
 
-        ResultSet result = statement.executeQuery(query);
+        result = statement.executeQuery(query);
 
-        while (result.next()) {
-            int id = Integer.parseInt(result.getString("id"));
-            String queryUsername = result.getString("username");
-            String queryPassword = result.getString("password");
+        result.next();
 
-            if (username.equals(queryUsername) && password.equals(queryPassword)) {
-                System.out.println("[Database] User " + username + " found");
-
-                statement.close();
-                return id;
-            }
-        }
+        int id = Integer.parseInt(result.getString("id"));
 
         statement.close();
-        return -1;
+        return id;
     }
 
     public String getSong(int songId) throws SQLException {
@@ -77,7 +69,8 @@ public class Database {
         int count = 0;
 
         query = "select id, name " +
-                "from song";
+                "from song " +
+                "order by id";
 
         if (user_id > 0)
             query += "where user_id= " + user_id;
@@ -102,10 +95,9 @@ public class Database {
         int count = 0;
 
         query = "select id, name " +
-                "from playlist ";
-
-        if (userId > 0)
-            query += "where user_id=" + userId;
+                "from playlist " +
+                "where user_id=" + userId +
+                " order by id ";
 
         statement = db.getConnection().createStatement();
 
@@ -113,7 +105,7 @@ public class Database {
 
         while (result.next()) {
             count++;
-            playlists.append(result.getInt("id")).append(" - ").append(result.getString("name"));
+            playlists.append(result.getInt("id")).append(" - ").append(result.getString("name")).append("\n");
         }
         playlists.insert(0, count + "\n");
 
@@ -170,11 +162,10 @@ public class Database {
         return result > 0;
     }
 
-
     public boolean updateSong(int id, String name, String artist, String album, int year, int length, String genre, String filelocation) throws SQLException {
         query = "update song " +
                 "set name ='" + name + "', artist ='" + artist + "', album ='" + album + "', " +
-                "year = " + year + ", length = " + length + ", genre = '" + genre + "', filelocation = '" + genre +
+                "year = " + year + ", length = " + length + ", genre = '" + genre +
                 "' where id = " + id;
 
         statement = db.getConnection().createStatement();
@@ -185,16 +176,41 @@ public class Database {
         return result > 0;
     }
 
-    public boolean addSongToPlaylist(int songId, int playlistId) throws SQLException {
+    public void addSongToPlaylist(int playlistId, int songId) throws SQLException {
         query = "insert into playlist_has_song(playlist_id, song_id)" +
                 " values(" + playlistId + "," + songId + ")";
 
         statement = db.getConnection().createStatement();
 
-        int result = statement.executeUpdate(query);
+        statement.executeUpdate(query);
+        statement.close();
+    }
+
+    public String getSongsFromPlaylist(int playlistId) throws SQLException {
+        StringBuilder songList = new StringBuilder();
+        int count = 0;
+        query = "select s.id, s.name\n" +
+                "from song as s \n" +
+                "inner join playlist_has_song as ph \n" +
+                "on ph.Song_id = s.id\n" +
+                "inner join playlist as p \n" +
+                "on p.id = ph.Playlist_id\n" +
+                "where p.id = " + playlistId +
+                " order by s.id";
+
+        statement = db.getConnection().createStatement();
+
+        result = statement.executeQuery(query);
+
+        while (result.next()) {
+            count++;
+            songList.append(result.getInt("id")).append(" - ").append(result.getString("name")).append("\n");
+        }
+
+        songList.insert(0, count + "\n");
 
         statement.close();
-        return result > 0;
+        return songList.toString();
     }
 
     public boolean removeSongFromPlaylist(int songID, int playlistId) throws SQLException {

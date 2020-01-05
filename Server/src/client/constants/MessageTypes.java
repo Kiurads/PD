@@ -5,15 +5,17 @@ public interface MessageTypes {
     String LOGIN = "LOGIN";
     String LOGOUT = "LOGOUT";
 
-    String SONGS = "SONGS";
-    String PLAY_SONG = "PLAY SONG";
-
     String PLAYLISTS = "PLAYLISTS";
-    String PLAYLIST_CREATE = "PLAYLIST_CREATE";
-    String PLAYLIST_EDIT = "PLAYLIST_EDIT";
-    String PLAYLIST_DELETE = "PLAYLIST_DELETE";
+    String PLAYLIST_CREATE = "PLAYLIST CREATE";
+    String PLAYLIST_EDIT = "PLAYLIST EDIT";
+    String PLAYLIST_DELETE = "PLAYLIST DELETE";
+    String PLAYLIST_ADD = "PLAYLIST ADD";
+    String PLAYLIST_REMOVE = "PLAYLIST REMOVE";
+    String PLAYLIST_SONGS = "PLAYLIST SONGS";
 
     String UPLOAD = "UPLOAD";
+    String SONGS = "SONGS";
+    String PLAY_SONG = "PLAY SONG";
 
     String CLOSE = "CLOSE";
 
