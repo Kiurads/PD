@@ -1,22 +1,25 @@
-package proxy;
+package model.proxy;
 
-import client.ClientThread;
-import database.Database;
-import proxy.constants.Constants;
-import proxy.constants.MessageTypes;
+import UI.controllers.Controller;
+import model.client.ClientThread;
+import model.database.Database;
+import model.proxy.constants.Constants;
+import model.proxy.constants.MessageTypes;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
 public class ProxyThread extends Thread implements Constants {
+    private Controller controller;
     private List<ClientThread> clientThreads;
     private Database database;
     private Proxy proxy;
     private boolean running;
 
-    public ProxyThread(InetAddress proxyAddress, List<ClientThread> clientThreads, Database database) throws IOException {
-        proxy = new Proxy(proxyAddress);
+    public ProxyThread(InetAddress proxyAddress, List<ClientThread> clientThreads, Database database, Controller controller) throws IOException {
+        this.controller = controller;
+        proxy = new Proxy(proxyAddress, controller);
         this.clientThreads = clientThreads;
         this.database = database;
 
@@ -42,9 +45,9 @@ public class ProxyThread extends Thread implements Constants {
 
                 switch (message) {
                     case MessageTypes.REQUEST_SERVER:
-                        System.out.println("[Proxy] Server requested");
+                        controller.addText("[Proxy] model.Server requested");
 
-                        ClientThread thread = new ClientThread(database);
+                        ClientThread thread = new ClientThread(database, controller);
                         proxy.send(String.valueOf(thread.getPort()));
 
                         thread.start();

@@ -35,8 +35,8 @@
                         <KeyCodeCombination alt="UP" code="P" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#onEditSong" text="Edit song" />
-                  <MenuItem mnemonicParsing="false" onAction="#onDeleteSong" text="Delete song" />
+                  <MenuItem fx:id="editItem" disable="true" mnemonicParsing="false" onAction="#onEditSong" text="Edit song" />
+                  <MenuItem fx:id="deleteItem" disable="true" mnemonicParsing="false" onAction="#onDeleteSong" text="Delete song" />
                      <SeparatorMenuItem mnemonicParsing="false" />
                      <MenuItem fx:id="createPlaylistItem" disable="true" mnemonicParsing="false" onAction="#onCreatePlaylist" text="Create playlist" />
                      <MenuItem fx:id="editPlaylistItem" disable="true" mnemonicParsing="false" onAction="#onEditPlaylist" text="Edit playlist" />

@@ -13,11 +13,15 @@ public class Diretorio implements Constants {
     private DatagramPacket packet;
     private List<Server> servers;
 
-    public Diretorio() throws SocketException {
+    private Controller controller;
+
+    public Diretorio(Controller controller) throws SocketException {
         socket = new DatagramSocket(DEFAULT_DS_PORT);
         socket.setSoTimeout(TIMEOUT * 1000);
 
-        System.out.println("Success");
+        this.controller = controller;
+
+        controller.addText("[Proxy] Start");
 
         servers = new ArrayList<>();
     }
@@ -38,7 +42,7 @@ public class Diretorio implements Constants {
         try {
             message = (String) in.readObject();
         } catch (ClassNotFoundException e) {
-            System.out.println("[Proxy] Invalid request received: " + e.getCause());
+            controller.addText("[Proxy] Invalid request received: " + e.getCause());
             return "";
         }
 
@@ -52,76 +56,74 @@ public class Diretorio implements Constants {
         ObjectOutputStream out;
         String message;
 
-        while (true) {
-            pingServers();
+        pingServers();
 
-            try {
-                message = waitDatagram();
-            } catch (SocketTimeoutException e) {
-                message = "";
-            }
+        try {
+            message = waitDatagram();
+        } catch (SocketTimeoutException e) {
+            message = "";
+        }
 
-            packetAddress = packet.getAddress();
-            packetPort = packet.getPort();
+        packetAddress = packet.getAddress();
+        packetPort = packet.getPort();
 
-            bOut = new ByteArrayOutputStream();
-            out = new ObjectOutputStream(bOut);
+        bOut = new ByteArrayOutputStream();
+        out = new ObjectOutputStream(bOut);
 
-            switch (message) {
-                case MessageTypes.REGISTER_SERVER:
-                    try {
-                        out.writeObject(MessageTypes.REGISTER_SERVER_SUCCESS);
-                        out.flush();
-
-                        packet = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), packetAddress, packetPort);
-                        socket.send(packet);
-
-                        servers.add(new Server(packetAddress, packetPort));
-                    } catch (IOException e) {
-                        break;
-                    }
-
-                    System.out.println("[Server] Server " + packetAddress.getHostAddress() + " registered");
-                    break;
-
-                case MessageTypes.REQUEST_SERVER:
-                    String clientReply;
-                    if (!servers.isEmpty()) {
-                        servers.get(currentServer).request();
-                        message = waitDatagram();
-
-                        clientReply = servers.get(currentServer).getAddress().getHostAddress() + '\n' + message;
-
-                        if (currentServer == servers.size() - 1) currentServer = 0;
-                        else currentServer++;
-                    } else
-                        clientReply = MessageTypes.NO_SERVERS;
-
-                    out.writeObject(clientReply);
+        switch (message) {
+            case MessageTypes.REGISTER_SERVER:
+                try {
+                    out.writeObject(MessageTypes.REGISTER_SERVER_SUCCESS);
                     out.flush();
 
                     packet = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), packetAddress, packetPort);
                     socket.send(packet);
 
-                    System.out.println("[Client] Request has been handled");
-
+                    servers.add(new Server(packetAddress, packetPort));
+                } catch (IOException e) {
                     break;
-                case MessageTypes.REMOVE_SERVER:
-                    for (int i = 0; i < servers.size(); i++) {
-                        if (servers.get(i).getAddress().equals(packetAddress)) {
-                            System.out.println("[Proxy] Removing server at " + packetAddress.getHostAddress());
-                            if (currentServer == servers.size() - 1) currentServer = 0;
-                            out.writeObject(MessageTypes.REMOVE_SERVER);
-                            out.flush();
+                }
 
-                            packet = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), packetAddress, packetPort);
-                            socket.send(packet);
+                controller.addText("[Server] Server " + packetAddress.getHostAddress() + " registered");
+                break;
 
-                            servers.remove(i);
-                            break;
-                        }
+            case MessageTypes.REQUEST_SERVER:
+                String clientReply;
+                if (!servers.isEmpty()) {
+                    servers.get(currentServer).request();
+                    message = waitDatagram();
+
+                    clientReply = servers.get(currentServer).getAddress().getHostAddress() + '\n' + message;
+
+                    if (currentServer == servers.size() - 1) currentServer = 0;
+                    else currentServer++;
+                } else
+                    clientReply = MessageTypes.NO_SERVERS;
+
+                out.writeObject(clientReply);
+                out.flush();
+
+                packet = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), packetAddress, packetPort);
+                socket.send(packet);
+
+                controller.addText("[Client] Request has been handled");
+
+                break;
+            case MessageTypes.REMOVE_SERVER:
+                for (int i = 0; i < servers.size(); i++) {
+                    if (servers.get(i).getAddress().equals(packetAddress)) {
+                        controller.addText("[Proxy] Removing server at " + packetAddress.getHostAddress());
+                        if (currentServer == servers.size() - 1) currentServer = 0;
+                        out.writeObject(MessageTypes.REMOVE_SERVER);
+                        out.flush();
+
+                        packet = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), packetAddress, packetPort);
+                        socket.send(packet);
+
+                        servers.remove(i);
+                        break;
                     }
-            }
+                }
         }
 
     }
@@ -133,7 +135,7 @@ public class Diretorio implements Constants {
             try {
                 String reply = waitDatagram();
             } catch (SocketTimeoutException e) {
-                System.out.println("[Proxy] Removing server at " + servers.get(i).getAddress().getHostAddress() + " for inactivity");
+                controller.addText("[Proxy] Removing server at " + servers.get(i).getAddress().getHostAddress() + " for inactivity");
                 if (currentServer == servers.size() - 1) currentServer = 0;
                 servers.remove(i--);
             }

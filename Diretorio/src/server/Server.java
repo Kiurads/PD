@@ -33,8 +33,6 @@ public class Server implements Constants {
 
         packet = new DatagramPacket(bOut.toByteArray(), 0, bOut.size(), address, port);
         socket.send(packet);
-
-        System.out.println("[Server:" + address.getHostAddress() + "] Requesting server");
     }
 
     public void sendMessage(String message) throws IOException {

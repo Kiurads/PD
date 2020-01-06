@@ -28,6 +28,7 @@ public class Controller {
 
     public MenuItem uploadItem;
     public MenuItem playItem;
+    public MenuItem editItem;
     public MenuItem createPlaylistItem;
     public MenuItem editPlaylistItem;
     public MenuItem deletePlaylistItem;
@@ -146,6 +147,7 @@ public class Controller {
             logoutItem.setDisable(false);
             uploadItem.setDisable(false);
             playItem.setDisable(false);
+            editItem.setDisable(false);
             createPlaylistItem.setDisable(false);
             editPlaylistItem.setDisable(false);
             deletePlaylistItem.setDisable(false);
@@ -173,6 +175,7 @@ public class Controller {
             logoutItem.setDisable(true);
             uploadItem.setDisable(true);
             playItem.setDisable(true);
+            editItem.setDisable(true);
             createPlaylistItem.setDisable(true);
             editPlaylistItem.setDisable(true);
             deletePlaylistItem.setDisable(true);

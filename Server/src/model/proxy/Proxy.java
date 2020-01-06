@@ -1,7 +1,8 @@
-package proxy;
+package model.proxy;
 
-import proxy.constants.Constants;
-import proxy.constants.MessageTypes;
+import UI.controllers.Controller;
+import model.proxy.constants.Constants;
+import model.proxy.constants.MessageTypes;
 
 import java.io.*;
 import java.net.DatagramPacket;
@@ -9,13 +10,15 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class Proxy {
+    private Controller controller;
     private DatagramSocket socket;
     private DatagramPacket sendPacket;
     private DatagramPacket receivePacket;
     private ByteArrayOutputStream bOut;
     private ObjectOutputStream out;
 
-    public Proxy(InetAddress address) throws IOException {
+    public Proxy(InetAddress address, Controller controller) throws IOException {
+        this.controller = controller;
         socket = new DatagramSocket(Constants.UDP_SERVER_PORT);
         socket.setSoTimeout(10 * 1000);
 
@@ -35,7 +38,7 @@ public class Proxy {
         send(MessageTypes.REGISTER_SERVER);
         reply = receive();
 
-        if (reply.contains(MessageTypes.REGISTER_SERVER_SUCCESS)) System.out.println("[Proxy] Server registered");
+        if (reply.contains(MessageTypes.REGISTER_SERVER_SUCCESS)) controller.addText("[Proxy] Server registered");
     }
 
     public void remove() {
