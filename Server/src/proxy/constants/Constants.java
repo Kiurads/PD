@@ -1,4 +1,4 @@
-package model.proxy.constants;
+package proxy.constants;
 
 public interface Constants {
     int MAX_SIZE = 256;

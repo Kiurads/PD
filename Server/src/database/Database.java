@@ -1,6 +1,4 @@
-package model.database;
-
-import UI.controllers.Controller;
+package database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,8 +12,8 @@ public class Database {
     private ResultSet result;
     private DatabaseConnector db;
 
-    public Database(Controller controller) throws SQLException, ClassNotFoundException {
-        db = new DatabaseConnector(controller);
+    public Database() throws SQLException, ClassNotFoundException {
+        db = new DatabaseConnector();
     }
 
     public void addUser(String name, String username, String password) throws SQLException {

@@ -1,4 +1,4 @@
-package model.database;
+package database;
 
 public interface Queries {
     String DATABASE_CREATION = "CREATE SCHEMA IF NOT EXISTS `PD_Streamer` DEFAULT CHARACTER SET utf8 ;\n";

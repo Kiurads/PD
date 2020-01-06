@@ -1,6 +1,6 @@
-package model.client;
+package client;
 
-import model.client.constants.Constants;
+import client.constants.Constants;
 
 import java.io.*;
 import java.net.ServerSocket;

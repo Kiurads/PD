@@ -1,4 +1,4 @@
-package model.client.constants;
+package client.constants;
 
 public interface Constants {
     int MAX_SIZE = 256;

@@ -1,4 +1,4 @@
-package model.client.constants;
+package client.constants;
 
 public interface MessageTypes {
     String REGISTER = "REGISTER";

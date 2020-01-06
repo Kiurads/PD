@@ -1,13 +1,11 @@
-package model.database;
-
-import UI.controllers.Controller;
+package database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static model.database.Queries.*;
+import static database.Queries.*;
 
 public class DatabaseConnector {
     private Connection connection;
@@ -16,12 +14,12 @@ public class DatabaseConnector {
     public static final String MAIN_CONNECTION = "jdbc:mysql://localhost:3306/";
     public static final String DB_CONNECTION = "jdbc:mysql://localhost:3306/PD_Streamer?allowMultipleQueries=true";
 
-    public DatabaseConnector(Controller controller) throws SQLException, ClassNotFoundException {
+    public DatabaseConnector() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         createDatabase();
 
         connection = DriverManager.getConnection(DB_CONNECTION, USERNAME, PASSWORD);
-        controller.addText("[Database] Connection established");
+        System.out.println("[Database] Connection established");
     }
 
     public void createDatabase() throws SQLException {

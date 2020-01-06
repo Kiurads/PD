@@ -1,4 +1,4 @@
-package model.proxy.constants;
+package proxy.constants;
 
 public interface MessageTypes {
     String REQUEST_SERVER = "REQUESTING SERVER";

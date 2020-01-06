@@ -1,22 +1,19 @@
-package model.client;
+package client;
 
-import UI.controllers.Controller;
-import model.client.constants.MessageTypes;
-import model.database.Database;
+import client.constants.MessageTypes;
+import database.Database;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
 public class ClientThread extends Thread {
-    private Controller controller;
     private Client client;
     private Database database;
     private boolean running;
 
-    public ClientThread(Database database, Controller controller) throws IOException {
+    public ClientThread(Database database) throws IOException {
         client = new Client();
-        this.controller = controller;
         this.database = database;
 
         running = true;
@@ -33,7 +30,7 @@ public class ClientThread extends Thread {
         try {
             client.accept();
         } catch (IOException e) {
-            controller.addText("ERROR " + e.getCause());
+            System.out.println("ERROR " + e.getCause());
             running = false;
         }
 
@@ -48,7 +45,7 @@ public class ClientThread extends Thread {
                 case MessageTypes.REGISTER:
                     try {
                         database.addUser(message[1], message[2], message[3]);
-                        controller.addText("[Client:" + client.getServerPort() + "] Register successful");
+                        System.out.println("[Client:" + client.getServerPort() + "] Register successful");
                         client.send(MessageTypes.SUCCESS);
                     } catch (SQLException e) {
                         try {
@@ -68,7 +65,7 @@ public class ClientThread extends Thread {
                         if (client.getUserID() != -1) {
                             client.send(MessageTypes.SUCCESS);
 
-                            controller.addText("[Client:" + client.getServerPort() + "] Login successful");
+                            System.out.println("[Client:" + client.getServerPort() + "] Login successful");
                         } else client.send(MessageTypes.FAILURE);
                     } catch (SQLException e) {
                         try {
@@ -94,7 +91,7 @@ public class ClientThread extends Thread {
                                     Integer.parseInt(message[6]),
                                     filePath);
 
-                            controller.addText("[Client:" + client.getServerPort() + "] Uploaded file");
+                            System.out.println("[Client:" + client.getServerPort() + "] Uploaded file");
                             client.send(MessageTypes.SUCCESS);
                             break;
                         }
@@ -209,7 +206,7 @@ public class ClientThread extends Thread {
                     try {
                         database.addPlaylist(message[1], client.getUserID());
 
-                        controller.addText("[Client:" + client.getServerPort() + "] Created playlist");
+                        System.out.println("[Client:" + client.getServerPort() + "] Created playlist");
                         client.send(MessageTypes.SUCCESS);
                         break;
                     } catch (SQLException e) {
@@ -227,7 +224,7 @@ public class ClientThread extends Thread {
                     try {
                         database.updatePlaylist(Integer.parseInt(message[1]), message[2]);
 
-                        controller.addText("[Client:" + client.getServerPort() + "] Edited playlist");
+                        System.out.println("[Client:" + client.getServerPort() + "] Edited playlist");
                         client.send(MessageTypes.SUCCESS);
                         break;
                     } catch (SQLException e) {
@@ -245,7 +242,7 @@ public class ClientThread extends Thread {
                     try {
                         database.removePlaylist(Integer.parseInt(message[1]));
 
-                        controller.addText("[Client:" + client.getServerPort() + "] Deleted playlist");
+                        System.out.println("[Client:" + client.getServerPort() + "] Deleted playlist");
                         client.send(MessageTypes.SUCCESS);
                         break;
                     } catch (SQLException e) {
@@ -263,7 +260,7 @@ public class ClientThread extends Thread {
                     try {
                         database.addSongToPlaylist(Integer.parseInt(message[1]), Integer.parseInt(message[2]));
 
-                        controller.addText("[Client:" + client.getServerPort() + "] Added song to playlist");
+                        System.out.println("[Client:" + client.getServerPort() + "] Added song to playlist");
                         client.send(MessageTypes.SUCCESS);
                         break;
                     } catch (SQLException e) {
@@ -281,7 +278,7 @@ public class ClientThread extends Thread {
                     try {
                         database.removeSongFromPlaylist(Integer.parseInt(message[1]), Integer.parseInt(message[2]));
 
-                        controller.addText("[Client:" + client.getServerPort() + "] Removed song from playlist");
+                        System.out.println("[Client:" + client.getServerPort() + "] Removed song from playlist");
                         client.send(MessageTypes.SUCCESS);
                         break;
                     } catch (SQLException e) {
@@ -334,7 +331,7 @@ public class ClientThread extends Thread {
                     try {
                         client.setUserID(-1);
 
-                        controller.addText("[Client:" + client.getServerPort() + "] Logout successful");
+                        System.out.println("[Client:" + client.getServerPort() + "] Logout successful");
                         client.send(MessageTypes.SUCCESS);
                     } catch (IOException e) {
                         terminate();
@@ -350,10 +347,10 @@ public class ClientThread extends Thread {
         try {
             client.close();
         } catch (IOException e) {
-            controller.addText("[Error] [Client:" + client.getServerPort() + "] " + e.getCause());
+            System.out.println("[Error] [Client:" + client.getServerPort() + "] " + e.getCause());
         }
 
-        controller.addText("[Client:" + client.getServerPort() + "] Closing connection");
+        System.out.println("[Client:" + client.getServerPort() + "] Closing connection");
     }
 
     public int getPort() {
